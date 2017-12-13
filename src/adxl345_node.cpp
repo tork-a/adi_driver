@@ -42,14 +42,14 @@ public:
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
   std::string device_;
-  string frame_id_;
+  std::string frame_id_;
 
   explicit Adxl345Node(ros::NodeHandle nh)
     : node_handle_(nh)
   {
     // Read parameters
-    node_handle_.param("device", device_, string("/dev/ttyACM0"));
-    node_handle_.param("frame_id", frame_id_, string("imu"));
+    node_handle_.param("device", device_, std::string("/dev/ttyACM0"));
+    node_handle_.param("frame_id", frame_id_, std::string("imu"));
     imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
   }
 

@@ -37,7 +37,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdint>
+#include <stdint.h>
 #include <string>
 #include "adi_driver/adis16470.h"
 

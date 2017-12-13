@@ -42,7 +42,7 @@ public:
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
   std::string device_;
-  string frame_id_;
+  std::string frame_id_;
   bool burst_mode_;
   double rate_;
 
@@ -50,8 +50,8 @@ public:
     : node_handle_(nh)
   {
     // Read parameters
-    node_handle_.param("device", device_, string("/dev/ttyACM0"));
-    node_handle_.param("frame_id", frame_id_, string("imu"));
+    node_handle_.param("device", device_, std::string("/dev/ttyACM0"));
+    node_handle_.param("frame_id", frame_id_, std::string("imu"));
     node_handle_.param("burst_mode", burst_mode_, true);
     node_handle_.param("rate", rate_, 100.0);
 
