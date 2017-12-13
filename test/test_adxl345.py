@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2017, Tokyo Opensource Robotics Kyokai Association
+# Copyright (c) 2017, Analog Devices Inc.
 # All right reserved.
 #
 # Redistribution and use in source and binary forms, with or without
