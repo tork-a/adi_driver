@@ -33,15 +33,8 @@
 #ifndef __ADIS16470_H__
 #define __ADIS16470_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <termios.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include "ros/ros.h"
+#include <string>
 
 class Adis16470
 {
