@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(adi_driver)
 
-find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs roslint)
 
 catkin_package(INCLUDE_DIRS include CATKIN_DEPENDS roscpp sensor_msgs)
 
@@ -36,6 +36,8 @@ if(CATKIN_ENABLE_TESTING)
     roslaunch_add_file_check(${LAUNCH_FILE})
   endforeach()
 endif()
+
+roslint_cpp()
 
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_adi_driver.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
