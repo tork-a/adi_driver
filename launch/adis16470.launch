@@ -1,15 +1,19 @@
 <launch>
-  <arg name="device" default="/dev/ttyACM0"/>
   <arg name="with_filter" default="true"/>
   <arg name="with_rviz" default="false"/>
   <arg name="with_plot" default="false"/>
+  <arg name="device" default="/dev/ttyACM0"/>
+  <arg name="frame_id" default="imu"/>
   <arg name="burst_read" default="false"/>
+  <arg name="rate" default="100"/>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find adi_driver)/urdf/adis16470_breakout.urdf'" />
 
   <node name="imu" pkg="adi_driver" type="adis16470_node">
     <param name="device" value="$(arg device)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
     <param name="burst_mode" value="$(arg burst_read)"/>
+    <param name="rate" value="$(arg rate)"/>
   </node>
 
   <node if="$(arg with_filter)"

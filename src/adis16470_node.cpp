@@ -45,6 +45,7 @@ public:
   std::string device_;
   string frame_id_;
   bool burst_mode_;
+  double rate_;
 
   ImuNode(ros::NodeHandle nh)
     : node_handle_(nh)
@@ -53,7 +54,12 @@ public:
     node_handle_.param("device", device_, string("/dev/ttyACM0"));
     node_handle_.param("frame_id", frame_id_, string("imu"));
     node_handle_.param("burst_mode", burst_mode_, true);
-    ROS_INFO("Burst read: %s", (burst_mode_ ? "true": "false"));
+    node_handle_.param("rate", rate_, 100.0);
+
+    ROS_INFO("device: %s", device_.c_str());
+    ROS_INFO("frame_id: %s", frame_id_.c_str());
+    ROS_INFO("rate: %f [Hz]", rate_);
+    ROS_INFO("burst_mode: %s", (burst_mode_ ? "true": "false"));
     
     imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
   }
@@ -113,7 +119,7 @@ public:
   
   bool spin()
   {
-    ros::Rate loop_rate(100);
+    ros::Rate loop_rate(rate_);
 
     while (ros::ok())
     {
