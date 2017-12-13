@@ -39,7 +39,7 @@ using namespace std;
 class ImuNode
 {
 public:
-  adis16470::IMU imu;
+  Adis16470 imu;
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
   std::string device_;
@@ -53,7 +53,7 @@ public:
     node_handle_.param("device", device_, string("/dev/ttyACM0"));
     node_handle_.param("frame_id", frame_id_, string("imu"));
     node_handle_.param("burst_mode", burst_mode_, true);
-    ROS_INFO("burst read: %s", (burst_mode_ ? "true": "false"));
+    ROS_INFO("Burst read: %s", (burst_mode_ ? "true": "false"));
     
     imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
   }

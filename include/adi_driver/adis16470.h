@@ -43,9 +43,7 @@
 #include <unistd.h>
 #include "ros/ros.h"
 
-namespace adis16470
-{
-class IMU
+class Adis16470
 {
 public:
   //! File descripter for USB-ISS
@@ -57,22 +55,14 @@ public:
   double gyro[3];
   // Acceleration sensor(x, y, z)
   double accl[3];
-  // Magnetic sensor(x, y, z)
-  double magn[3];
   
-  IMU();
+  Adis16470();
   int openPort(const std::string device);
   void closePort();
-  void printInfo(void);
-
   int get_product_id(short& data);
-  int get_seq_count(short& data);
   int update(void);
   int update_burst(void);
-  short read_address(char address);
-  
+  int read_register(char address, short& data);
 };
-
-}
 
 #endif

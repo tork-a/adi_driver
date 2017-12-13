@@ -32,248 +32,257 @@
 
 #include "adi_driver/adis16470.h"
 
-adis16470::IMU::IMU()
+/**
+ * @brief change big endian 2 byte into short
+ * @param data Head pointer to the data
+ * @retrun converted value
+ */
+short big_endian_to_short(unsigned char *data)
+{
+  unsigned char buff[2] = {data[1], data[0]};
+  return *((short*)buff);
+}
+
+/**
+ * @brief Constructor
+ */
+Adis16470::Adis16470()
   : fd_(-1)
 {
 }
 
 /**
- * @brief Open IMU device
+ * @brief Open device
  * @param device Device file name (/dev/ttyACM*)
  * @retval 0 Success
  * @retval -1 Failure
  */
-int adis16470::IMU::openPort(const std::string device)
+int Adis16470::openPort(const std::string device)
 {
-  struct termios config;
-
   fd_ = open(device.c_str(), O_RDWR | O_NOCTTY);
   if(fd_ < 0)
   {
+    perror("openPort");
     return -1;
   }
   if (tcgetattr(fd_, &defaults_) < 0)
   {
-    perror("tcgetattr");
+    perror("openPort");
+    return -1;
   }
+  struct termios config;
   cfmakeraw(&config);
   if (tcsetattr(fd_, TCSANOW, &config) < 0)
   {
-    ROS_ERROR("tcsetattr failed");
+    perror("openPort");
+    return -1;
   }
-  // set SPI mode
-  unsigned char buff[20];
+  // Set SPI mode
+  unsigned char buff[20] = {0};
   buff[0] = 0x5A;
   buff[1] = 0x02; // Set mode command
   buff[2] = 0x93; // Set SPI mode 
   buff[3] = 5; // 1MHz clock speed
 
-  if (write(fd_, buff, 4) < 0)
+  int size = write(fd_, buff, 4);
+  if (size != 4)
   {
-    ROS_ERROR("write error");
+    perror("openPort");
   }
   if (tcdrain(fd_) < 0)
   {
-    ROS_ERROR("set_spi_mode tcdrain");
+    perror("openPort");
   }
-  if (read(fd_, buff, 2) < 0)
+  size = read(fd_, buff, 2);
+  if (size != 2)
   {
-    ROS_ERROR("set_spi_mode read");
+    perror("openPort");
+    return -1;
   }
-  // Read back error byte
-  if(buff[0] != 0xFF)
+  // Check first byte
+  if(buff[0] != 0xff)
   {
-    ROS_ERROR("**set_spi_mode: Error setting spi mode!**\n\n");
+    perror("openPort");
+    return -1;
   }
   return 0;
 }
 
-void adis16470::IMU::printInfo()
-{
-  unsigned char buff[20];
-
-  buff[0] = 0x5A;
-  buff[1] = 0x01; // Software return byte
-
-  if (write(fd_, buff, 2) < 0) perror("display_version write");
-  if (tcdrain(fd_) < 0) perror("display_version tcdrain");
-  if (read(fd_, buff, 3) < 0) perror("display_version read");
-
-  ROS_INFO("USB-ISS Module ID: %u \n", buff[0]);
-  ROS_INFO("USB-ISS Software v: %u \n\n", buff[1]);
-}
-
-void adis16470::IMU::closePort()
+/**
+ * @brief Close device
+ */
+void Adis16470::closePort()
 {
   if (tcsetattr(fd_, TCSANOW, &defaults_) < 0)
   {
-    perror("tcsetattr defaults");
+    perror("closePort");
   }
   close(fd_);
 }
 
 /**
  * @param data Product ID (0x4056)
- * @return 0: Success, 1: Failed
+ * @retval 0 Success
+ * @retval -1 Failed
  */
-int adis16470::IMU::get_product_id(short& pid)
+int Adis16470::get_product_id(short& pid)
 {
   // get product ID
   int r;
   unsigned char buff[20];
 
+  // Sending data
   buff[0] = 0x61;
   buff[1] = 0x72;
   buff[2] = 0x00;
-
-  if (write(fd_, buff, 3) < 0)
+  int size = write(fd_, buff, 3);
+  if (size != 3)
   {
-    perror("write");
+    perror("get_product_id");
+    return -1;
   }
   if (tcdrain(fd_) < 0)
   {
-    perror("tcdrain");
+    perror("get_product_id");
+    return -1;
   }
-  if (read(fd_, buff, 3) < 0)
+  size = read(fd_, buff, 3);
+  if (size != 3)
   {
-    perror("read");
+    perror("get_product_id");
+    return -1;
   }
+  // Receiving data
   buff[0] = 0x61;
   buff[1] = 0x00;
   buff[2] = 0x00;
-  if (write(fd_, buff, 3) < 0)
+  size = write(fd_, buff, 3);
+  if (size != 3)
   {
-    perror("write");
+    perror("get_product_id");
+    return -1;
   }
   if (tcdrain(fd_) < 0)
   {
-    perror("tcdrain");
+    perror("get_product_id");
+    return -1;
   }
-  if (read(fd_, buff, 3) < 0)
+  size = read(fd_, buff, 3);
+  if (size != 3)
   {
-    perror("read");
+    perror("get_product_id");
+    return -1;
   }
-  char b[2] = {buff[2], buff[1]};
-  pid = *((short*)b);
-  return 0;
-}
-
-int adis16470::IMU::get_seq_count(short& data)
-{
+  // Convert to short
+  pid = big_endian_to_short(&buff[1]);
   return 0;
 }
 
 /**
- * @brief Update all information by bust read
- * @return 0: Success, -1: Failed
+ * @brief Read data from the register
+ * @param address Register address
+ * @retval 0 Success
+ * @retval -1 Failed
+ * 
+ * - Adress is the first byte of actual address
+ * - Actual data at the adress will be returned by next call.
  */
-int adis16470::IMU::update_burst(void)
+int Adis16470::read_register(char address, short& data)
 {
-  char buff[64];
-
-  memset(buff, 0, sizeof(buff));
-  // 0x6800: Burst read function
-  buff[0] = 0x61;
-  buff[1] = 0x68;
-  buff[2] = 0x00;
-  
-  if (write(fd_, buff, 24) < 0)
+  unsigned char buff[3] = {0x61, address, 0x00};
+  int size = write(fd_, buff, 3);
+  if (size != 3)
   {
-    perror("write");
+    perror("read_register");
+    return -1;
   }
   if (tcdrain(fd_) < 0)
   {
-    perror("tcdrain");
+    perror("read_register");
+    return -1;
   }
-  int size = read(fd_, buff, 30);
-  if (size < 0)
-  {
-    perror("read");
-  }
-  unsigned short diag_stat;
-  unsigned char buff2[2];
-
-  buff2[0] = buff[4];
-  buff2[1] = buff[3];
-  diag_stat = *((short*)buff2);
-  if (diag_stat != 0)
-  {
-    ROS_WARN("Some error received: diag_stat: %x\n", diag_stat);
-  }
-  // X_GYRO_OUT
-  buff2[0] = buff[6];
-  buff2[1] = buff[5];
-  gyro[0] = *((short*)buff2) * M_PI / 180 / 10.0;
-  // Y_GYRO_OUT
-  buff2[0] = buff[8];
-  buff2[1] = buff[7];
-  gyro[1] = *((short*)buff2) * M_PI / 180 / 10.0;
-  // Z_GYRO_OUT
-  buff2[0] = buff[10];
-  buff2[1] = buff[9];
-  gyro[2] = *((short*)buff2) * M_PI / 180 / 10.0;
-  // X_ACCL_OUT
-  buff2[0] = buff[12];
-  buff2[1] = buff[11];
-  accl[0] = *((short*)buff2) * 9.8 / 800.0;
-  // Y_ACCL_OUT
-  buff2[0] = buff[14];
-  buff2[1] = buff[13];
-  accl[1] = *((short*)buff2) * 9.8 / 800.0;
-  // Z_ACCL_OUT
-  buff2[0] = buff[16];
-  buff2[1] = buff[15];
-  accl[2] = *((short*)buff2) * 9.8 / 800.0;
-
-  return 0;
-}  
-
-short adis16470::IMU::read_address(char address)
-{
-  char buff[3];
-  
-  buff[0] = 0x61;
-  buff[1] = address;
-  buff[2] = 0x00;
-  if (write(fd_, buff, 3) < 0)
-  {
-    perror("write");
-  }
-  if (tcdrain(fd_) < 0)
-  {
-    ROS_ERROR("tcdrain");
-  }
-  int size = read(fd_, buff, 3);
+  size = read(fd_, buff, 3);
   if (size !=3)
   {
     perror("read");
   }
-  char buff2[2];
-  buff2[0] = buff[2];
-  buff2[1] = buff[1];
-  return *((short*)buff2);
+  data = big_endian_to_short(&buff[1]);
 }
+
+/**
+ * @brief Update all information by bust read
+ * @retval 0 Success
+ * @retval -1 Failed
+ * 
+ * - See burst read function at pp.14 
+ * - Data resolution is 16 bit
+ */
+int Adis16470::update_burst(void)
+{
+  unsigned char buff[64] = {0};
+  // 0x6800: Burst read function
+  buff[0] = 0x61;
+  buff[1] = 0x68;
+  buff[2] = 0x00;
+  int size = write(fd_, buff, 24);
+  if (size != 24)
+  {
+    perror("update_burst");
+    return -1;
+  }
+  if (tcdrain(fd_) < 0)
+  {
+    perror("update_burst");
+    return -1;
+  }
+  size = read(fd_, buff, 30);
+  if (size != 30)
+  {
+    perror("update_burst");
+    return -1;
+  }
+  short diag_stat = big_endian_to_short(&buff[3]);
+  if (diag_stat != 0)
+  {
+    fprintf(stderr, "diag_stat error: %04x\n", (unsigned short)diag_stat);
+    return -1;
+  }
+  // X_GYRO_OUT
+  gyro[0] = big_endian_to_short(&buff[5]) * M_PI / 180 / 10.0;
+  // Y_GYRO_OUT
+  gyro[1] = big_endian_to_short(&buff[7]) * M_PI / 180 / 10.0;
+  // Z_GYRO_OUT
+  gyro[2] = big_endian_to_short(&buff[9]) * M_PI / 180 / 10.0;
+  // X_ACCL_OUT
+  accl[0] = big_endian_to_short(&buff[11]) * M_PI / 180 / 10.0;
+  // Y_ACCL_OUT
+  accl[1] = big_endian_to_short(&buff[13]) * M_PI / 180 / 10.0;
+  // Z_ACCL_OUT
+  accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
+
+  return 0;
+}  
 
 /**
  * @brief update gyro and accel in high-precision read
  */
-int adis16470::IMU::update(void)
+int Adis16470::update(void)
 {
   short gyro_out[3], gyro_low[3], accl_out[3], accl_low[3];
 
-  read_address(0x04);
-  gyro_low[0] = read_address(0x06);
-  gyro_out[0] = read_address(0x08);
-  gyro_low[1] = read_address(0x0a);
-  gyro_out[1] = read_address(0x0c);
-  gyro_low[2] = read_address(0x0e);
-  gyro_out[2] = read_address(0x10);
-  accl_low[0] = read_address(0x12);
-  accl_out[0] = read_address(0x14);
-  accl_low[1] = read_address(0x16);
-  accl_out[1] = read_address(0x18);
-  accl_low[2] = read_address(0x1a);
-  accl_out[2] = read_address(0x00);
+  read_register(0x04, gyro_low[0]);
+  read_register(0x06, gyro_low[0]);
+  read_register(0x08, gyro_out[0]);
+  read_register(0x0a, gyro_low[1]);
+  read_register(0x0c, gyro_out[1]);
+  read_register(0x0e, gyro_low[2]);
+  read_register(0x10, gyro_out[2]);
+  read_register(0x12, accl_low[0]);
+  read_register(0x14, accl_out[0]);
+  read_register(0x16, accl_low[1]);
+  read_register(0x18, accl_out[1]);
+  read_register(0x1a, accl_low[2]);
+  read_register(0x00, accl_out[2]);
 
   // 32bit convert
   for (int i=0; i<3; i++)
