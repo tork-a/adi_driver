@@ -30,11 +30,10 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <string>
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
 #include "adi_driver/adxl345.h"
-
-using namespace std;
 
 class Adxl345Node
 {
@@ -45,13 +44,12 @@ public:
   std::string device_;
   string frame_id_;
 
-  Adxl345Node(ros::NodeHandle nh)
+  explicit Adxl345Node(ros::NodeHandle nh)
     : node_handle_(nh)
   {
     // Read parameters
     node_handle_.param("device", device_, string("/dev/ttyACM0"));
     node_handle_.param("frame_id", frame_id_, string("imu"));
-    
     imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
   }
 
@@ -102,7 +100,6 @@ public:
 
     imu_data_pub_.publish(data);
   }
-  
   bool spin()
   {
     ros::Rate loop_rate(100);

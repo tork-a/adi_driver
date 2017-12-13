@@ -30,8 +30,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef __ADIS16470_H__
-#define __ADIS16470_H__
+#ifndef ADI_DRIVER_ADIS16470_H
+#define ADI_DRIVER_ADIS16470_H
 
 #include <termios.h>
 #include <string>
@@ -48,14 +48,14 @@ public:
   double gyro[3];
   // Acceleration sensor(x, y, z)
   double accl[3];
-  
+
   Adis16470();
   int openPort(const std::string device);
   void closePort();
-  int get_product_id(short& data);
+  int get_product_id(int16_t& data);
   int update(void);
   int update_burst(void);
-  int read_register(char address, short& data);
+  int read_register(char address, int16_t& data);
 };
 
-#endif
+#endif  // ADI_DRIVER_ADIS16470_H

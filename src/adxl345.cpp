@@ -38,6 +38,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string>
 #include "ros/ros.h"
 #include "adi_driver/adxl345.h"
 
@@ -51,7 +52,7 @@ int adxl345::Imu::open_device(const std::string device)
   struct termios config;
 
   fd_ = open(device.c_str(), O_RDWR | O_NOCTTY);
-  if(fd_ < 0)
+  if (fd_ < 0)
   {
     return -1;
   }
@@ -69,10 +70,10 @@ int adxl345::Imu::open_device(const std::string device)
   // set SPI mode
   unsigned char buff[20];
   buff[0] = 0x5A;
-  buff[1] = 0x02; // Set mode command
-  buff[2] = 0x93; // Set SPI mode 3
-  //buff[3] = 5; // 1MHz clock speed
-  buff[3] = 11; // 500kHz clock speed
+  buff[1] = 0x02;  // Set mode command
+  buff[2] = 0x93;  // Set SPI mode 3
+  // buff[3] = 5;  // 1MHz clock speed
+  buff[3] = 11;  // 500kHz clock speed
 
   if (write(fd_, buff, 4) < 0)
   {
@@ -87,12 +88,12 @@ int adxl345::Imu::open_device(const std::string device)
     ROS_ERROR("set_spi_mode read");
   }
   // Read back error byte
-  if(buff[0] != 0xFF)
+  if (buff[0] != 0xFF)
   {
     ROS_ERROR("**set_spi_mode: Error setting spi mode!**\n\n");
   }
   write_address(0x2d, 0x08);
-  
+
   return 0;
 }
 
@@ -117,7 +118,6 @@ int adxl345::Imu::get_product_id(unsigned char& data)
 char adxl345::Imu::read_address(char address)
 {
   char buff[3];
-  
   buff[0] = 0x61;
   buff[1] = address | (0x01 << 7);
   buff[2] = 0x00;
@@ -137,10 +137,9 @@ char adxl345::Imu::read_address(char address)
   return buff[2];
 }
 
-short adxl345::Imu::read_short(char address)
+int16_t adxl345::Imu::read_short(char address)
 {
   char buff[4];
-  
   buff[0] = 0x61;
   buff[1] = address | (0x03 << 6);
   buff[2] = 0x00;
@@ -159,14 +158,13 @@ short adxl345::Imu::read_short(char address)
     perror("read");
   }
   // printf("%2x %02x\n", (unsigned char)buff[2], (unsigned char)buff[3]);
-  return *((short*)&buff[2]);
+  return *reinterpret_cast<uint16_t*>(&buff[2]);
 }
 
 
 char adxl345::Imu::write_address(char address, char data)
 {
   char buff[3];
-  
   buff[0] = 0x61;
   buff[1] = address;
   buff[2] = data;

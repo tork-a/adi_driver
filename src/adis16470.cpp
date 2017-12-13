@@ -37,6 +37,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdint>
+#include <string>
 #include "adi_driver/adis16470.h"
 
 /**
@@ -44,10 +46,10 @@
  * @param data Head pointer to the data
  * @retrun converted value
  */
-short big_endian_to_short(unsigned char *data)
+int16_t big_endian_to_short(unsigned char *data)
 {
   unsigned char buff[2] = {data[1], data[0]};
-  return *((short*)buff);
+  return *reinterpret_cast<int16_t*>(buff);
 }
 
 /**
@@ -67,7 +69,7 @@ Adis16470::Adis16470()
 int Adis16470::openPort(const std::string device)
 {
   fd_ = open(device.c_str(), O_RDWR | O_NOCTTY);
-  if(fd_ < 0)
+  if (fd_ < 0)
   {
     perror("openPort");
     return -1;
@@ -87,9 +89,9 @@ int Adis16470::openPort(const std::string device)
   // Set SPI mode
   unsigned char buff[20] = {0};
   buff[0] = 0x5A;
-  buff[1] = 0x02; // Set mode command
-  buff[2] = 0x93; // Set SPI mode 
-  buff[3] = 5; // 1MHz clock speed
+  buff[1] = 0x02;  // Set mode command
+  buff[2] = 0x93;  // Set SPI mode
+  buff[3] = 5;  // 1MHz clock speed
 
   int size = write(fd_, buff, 4);
   if (size != 4)
@@ -107,7 +109,7 @@ int Adis16470::openPort(const std::string device)
     return -1;
   }
   // Check first byte
-  if(buff[0] != 0xff)
+  if (buff[0] != 0xff)
   {
     perror("openPort");
     return -1;
@@ -132,7 +134,7 @@ void Adis16470::closePort()
  * @retval 0 Success
  * @retval -1 Failed
  */
-int Adis16470::get_product_id(short& pid)
+int Adis16470::get_product_id(int16_t& pid)
 {
   // get product ID
   int r;
@@ -194,7 +196,7 @@ int Adis16470::get_product_id(short& pid)
  * - Adress is the first byte of actual address
  * - Actual data at the adress will be returned by next call.
  */
-int Adis16470::read_register(char address, short& data)
+int Adis16470::read_register(char address, int16_t& data)
 {
   unsigned char buff[3] = {0x61, address, 0x00};
   int size = write(fd_, buff, 3);
@@ -248,10 +250,10 @@ int Adis16470::update_burst(void)
     perror("update_burst");
     return -1;
   }
-  short diag_stat = big_endian_to_short(&buff[3]);
+  int16_t diag_stat = big_endian_to_short(&buff[3]);
   if (diag_stat != 0)
   {
-    fprintf(stderr, "diag_stat error: %04x\n", (unsigned short)diag_stat);
+    fprintf(stderr, "diag_stat error: %04x\n", (uint16_t)diag_stat);
     return -1;
   }
   // X_GYRO_OUT
@@ -268,14 +270,14 @@ int Adis16470::update_burst(void)
   accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
 
   return 0;
-}  
+}
 
 /**
  * @brief update gyro and accel in high-precision read
  */
 int Adis16470::update(void)
 {
-  short gyro_out[3], gyro_low[3], accl_out[3], accl_low[3];
+  int16_t gyro_out[3], gyro_low[3], accl_out[3], accl_low[3];
 
   read_register(0x04, gyro_low[0]);
   read_register(0x06, gyro_low[0]);
@@ -292,7 +294,7 @@ int Adis16470::update(void)
   read_register(0x00, accl_out[2]);
 
   // 32bit convert
-  for (int i=0; i<3; i++)
+  for (int i=0; i < 3; i++)
   {
     gyro[i] = ((int32_t(gyro_out[i]) << 16) + int32_t(gyro_low[i])) * M_PI / 180.0 / 655360.0;
     accl[i] = ((int32_t(accl_out[i]) << 16) + int32_t(accl_low[i])) * 9.8 / 52428800.0;

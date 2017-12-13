@@ -30,33 +30,35 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef __ADXL345_H__
-#define __ADXL345_H__
+#ifndef ADI_DRIVER_ADXL345_H
+#define ADI_DRIVER_ADXL345_H
 
+#include <string>
 #include <termios.h>
 
 namespace adxl345
 {
 class Imu
 {
-public: 
+public:
   //! File descripter for USB-ISS
   int fd_;
   //! Saved terminal config
   struct termios defaults_;
   // Acceleration x,y,z
   double accl[3];
-  
+
   Imu();
   char read_address(char address);
-  short read_short(char address);
+  int16_t read_short(char address);
   char write_address(char address, char data);
   int open_device(const std::string device);
   void close_device();
   int get_product_id(unsigned char& data);
-  int get_seq_count(short& data);
+  int get_seq_count(int16_t& data);
   int update(void);
 };
 
-}
-#endif
+}  // namespace adxl345
+
+#endif  // ADI_DRIVER_ADXL345_H

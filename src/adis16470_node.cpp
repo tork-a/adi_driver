@@ -30,11 +30,10 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <string>
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
 #include "adi_driver/adis16470.h"
-
-using namespace std;
 
 class ImuNode
 {
@@ -47,7 +46,7 @@ public:
   bool burst_mode_;
   double rate_;
 
-  ImuNode(ros::NodeHandle nh)
+  explicit ImuNode(ros::NodeHandle nh)
     : node_handle_(nh)
   {
     // Read parameters
@@ -60,7 +59,7 @@ public:
     ROS_INFO("frame_id: %s", frame_id_.c_str());
     ROS_INFO("rate: %f [Hz]", rate_);
     ROS_INFO("burst_mode: %s", (burst_mode_ ? "true": "false"));
-    
+
     imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
   }
 
@@ -88,7 +87,7 @@ public:
     }
     // Wait 10ms for SPI ready
     usleep(10000);
-    short pid = 0;
+    int16_t pid = 0;
     imu.get_product_id(pid);
     ROS_INFO("Product ID: %x\n", pid);
   }
@@ -116,7 +115,6 @@ public:
 
     imu_data_pub_.publish(data);
   }
-  
   bool spin()
   {
     ros::Rate loop_rate(rate_);
@@ -159,7 +157,7 @@ int main(int argc, char** argv)
   ImuNode node(nh);
 
   node.open();
-  while(not node.is_opened())
+  while (!node.is_opened())
   {
     ROS_WARN("Keep trying to open the device in 1 second period...");
     sleep(1);
