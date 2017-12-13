@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2017, Tokyo Opensource Robotics Kyokai Association
+# Copyright (c) 2017, Analog Devices Inc.
 # All right reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@ import unittest
 import rospy
 import rostest
 import time
+from collections import deque
 from sensor_msgs.msg import Imu
 
 def imu_get_min(imu, a, b):
@@ -59,42 +60,70 @@ class TestImu(unittest.TestCase):
     def setUp(self):
         self.imu_raw_count = 0
         self.imu_count = 0
-        self.imu_raw_min = Imu()
-        self.imu_raw_max = Imu()
-        self.imu_min = Imu()
-        self.imu_max = Imu()
+        self.imu_raw_data = deque(maxlen=100)
+        self.imu_data = deque(maxlen=100)
         rospy.Subscriber('/imu/data_raw', Imu, self.cb_imu_raw, queue_size=1000)
         rospy.Subscriber('/imu/data', Imu, self.cb_imu, queue_size=1000)
         
     def cb_imu_raw(self, msg):
         self.imu_raw_count += 1
-        imu_get_min(self.imu_raw_min, self.imu_raw_min, msg)
-        imu_get_max(self.imu_raw_max, self.imu_raw_max, msg)
+        self.imu_raw_data.append(msg)
 
     def cb_imu(self, msg):
         self.imu_count += 1
-        imu_get_min(self.imu_raw_min, self.imu_raw_min, msg)
-        imu_get_max(self.imu_raw_max, self.imu_raw_max, msg)
+        self.imu_data.append(msg)
 
     def test_imu_raw(self):
-        time.sleep(0.1)
+        time.sleep(1.0)
+        # Check data count
         self.assertTrue(self.imu_raw_count>0, 'No data received from /imu/data_raw')
-        self.assertFalse(math.isnan(self.imu_raw_min.linear_acceleration.x));
-        self.assertFalse(math.isnan(self.imu_raw_min.linear_acceleration.y));
-        self.assertFalse(math.isnan(self.imu_raw_min.linear_acceleration.z));
-        self.assertFalse(math.isnan(self.imu_raw_max.linear_acceleration.x));
-        self.assertFalse(math.isnan(self.imu_raw_max.linear_acceleration.y));
-        self.assertFalse(math.isnan(self.imu_raw_max.linear_acceleration.z));
 
+        # Check orientation
+        for imu in self.imu_raw_data:
+            self.assertAlmostEqual(imu.orientation.x, 0)
+            self.assertAlmostEqual(imu.orientation.y, 0)
+            self.assertAlmostEqual(imu.orientation.z, 0)
+            self.assertAlmostEqual(imu.orientation.w, 1)
+            for cov in imu.orientation_covariance:
+                self.assertAlmostEqual(cov, 0)
+
+        # Check angular velocity
+        for imu in self.imu_raw_data:
+            self.assertTrue(abs(imu.angular_velocity.x) < 0.1);
+            self.assertTrue(abs(imu.angular_velocity.y) < 0.1);
+            self.assertTrue(abs(imu.angular_velocity.z) < 0.1);
+            for cov in imu.angular_velocity_covariance:
+                self.assertAlmostEqual(cov, 0)
+
+        # Check linear_acceleration with gravity (CAUTION: test will fail in space)
+        for imu in self.imu_raw_data:
+            accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
+            self.assertTrue(accl > 8.0)
+            self.assertTrue(accl < 11.0)
+            
     def test_imu(self):
-        time.sleep(0.1)
-        self.assertTrue(self.imu_raw_count>0, 'No data received from /imu/data')
-        self.assertFalse(math.isnan(self.imu_min.linear_acceleration.x));
-        self.assertFalse(math.isnan(self.imu_min.linear_acceleration.y));
-        self.assertFalse(math.isnan(self.imu_min.linear_acceleration.z));
-        self.assertFalse(math.isnan(self.imu_max.linear_acceleration.x));
-        self.assertFalse(math.isnan(self.imu_max.linear_acceleration.y));
-        self.assertFalse(math.isnan(self.imu_max.linear_acceleration.z));
+        time.sleep(1.0)
+        # Check data count
+        self.assertTrue(self.imu_count>0, 'No data received from /imu/data')
+
+        # Check orientation
+        for imu in self.imu_data:
+            quat = math.sqrt(imu.orientation.x**2 + imu.orientation.y**2 + imu.orientation.z**2 + imu.orientation.w**2)
+            self.assertAlmostEqual(quat, 1, delta=0.001)
+
+        # Check angular velocity
+        for imu in self.imu_data:
+            self.assertTrue(abs(imu.angular_velocity.x) < 0.1);
+            self.assertTrue(abs(imu.angular_velocity.y) < 0.1);
+            self.assertTrue(abs(imu.angular_velocity.z) < 0.1);
+            for cov in imu.angular_velocity_covariance:
+                self.assertAlmostEqual(cov, 0)
+
+        # Check linear_acceleration with gravity (CAUTION: test will fail in space)
+        for imu in self.imu_data:
+            accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
+            self.assertTrue(accl > 8.0)
+            self.assertTrue(accl < 11.0)
 
 if __name__ == '__main__':
     rostest.rosrun('adi_driver', 'test_adi_driver', TestImu)
