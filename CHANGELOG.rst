@@ -4,6 +4,7 @@ Changelog for package adi_driver
 
 Forthcoming
 -----------
+* Add doc/index.rst
 * Fix build errors
 * Remove all error of roslint
 * Add roslint settings
