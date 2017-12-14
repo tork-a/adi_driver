@@ -2,8 +2,8 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2017-12-14)
+------------------
 * Add doc/index.rst
 * Fix build errors
 * Remove all error of roslint
