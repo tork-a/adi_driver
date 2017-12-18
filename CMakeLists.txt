@@ -43,3 +43,31 @@ roslint_cpp()
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
+
+# make docs
+# ROS_PARALLEL_JOBS='' catkin_make --pkg adi_driver -- docbuild_adi_driver
+add_custom_target(docbuild_${PROJECT_NAME}
+  COMMAND cmake -E remove_directory output
+  COMMAND cmake -E make_directory output
+  COMMAND sphinx-build -b latex doc output
+  #COMMAND cmake -E chdir output sh -c 'ls *.png | xargs extractbb'
+  COMMAND cd output \\; ls *.png | xargs extractbb
+  COMMAND sed -i 's@\\\\setcounter{tocdepth}{0}@@' output/${PROJECT_NAME}.tex
+  ## change layout, chapter to section, section to subsection
+    COMMAND sed -i 's@\\\\chapter{[0-9. ]*@\\\\chapter{@' output/${PROJECT_NAME}.tex
+    COMMAND sed -i 's@\\\\section{[0-9. ]*@\\\\section{@' output/${PROJECT_NAME}.tex
+    COMMAND sed -i 's@\\\\subsection@\\\\subsubsection@' output/${PROJECT_NAME}.tex
+    COMMAND sed -i 's@\\\\section@\\\\subsection@' output/${PROJECT_NAME}.tex
+    COMMAND sed -i 's@\\\\chapter@\\\\section@' output/${PROJECT_NAME}.tex
+    COMMAND sed -i 's@\\\\tableofcontents@\\\\setcounter{chapter}{1}\\\\tableofcontents@' output/${PROJECT_NAME}.tex
+  ##
+  ## for japanese doc,
+   # COMMAND cmake -E chdir output platex ${PROJECT_NAME}.tex
+   # COMMAND cmake -E chdir output platex ${PROJECT_NAME}.tex
+   # COMMAND cmake -E chdir output dvipdfmx ${PROJECT_NAME}
+  ## for english doc
+    COMMAND make -C output
+  ##
+  COMMAND cmake -E copy output/${PROJECT_NAME}.pdf output/${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.pdf
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  )
