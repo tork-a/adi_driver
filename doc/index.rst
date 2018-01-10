@@ -180,7 +180,7 @@ The parts list of the cable is here:
 `ADXL345`_ is a three axis accerometer sensor. It has a SPI interface.
 The following section assumes to use this breakout board.
 
-- `ADXL345 Breakout board
+- ADXL345 Breakout board
 
   - SparkFun: https://www.sparkfun.com/products/9836 <https://www.sparkfun.com/products/9836>`_
 
