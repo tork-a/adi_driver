@@ -2,6 +2,22 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* note that you need to restart after addgroup (`#3 <https://github.com/tork-a/adi_driver/issues/3>`_)
+* Add publish_tf argument for launch file
+* Change to load model only if use rviz
+* Update index.rst
+* Fix schematics, add documents
+  - Schematics of ADIS16470 cable was wrong
+  - Add ADXL345 cable schematics
+* Add docbuild (`#2 <https://github.com/tork-a/adi_driver/issues/2>`_)
+  * add circle.yml
+  * add docbuild command to CMakeLists.txt
+  * Update index.rst contents
+  * Put travis badge.
+* Contributors: Ryosuke Tajima, Tokyo Opensource Robotics Developer 534, Y. Suzuki
+
 0.0.1 (2017-12-14)
 ------------------
 * Add doc/index.rst
