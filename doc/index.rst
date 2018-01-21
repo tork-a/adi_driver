@@ -236,6 +236,7 @@ You need your user account is in the ``dialout`` group to acces
 
 If you don't find ``dialout`` there, you should add the user into the
 group by ``adduser`` command.
+**Note that you need to _restart_ after you added the user into the ``dialout`` group**
    
 .. code-block:: bash
 
