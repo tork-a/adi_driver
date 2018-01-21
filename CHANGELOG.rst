@@ -2,8 +2,8 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2018-01-21)
+------------------
 * note that you need to restart after addgroup (`#3 <https://github.com/tork-a/adi_driver/issues/3>`_)
 * Add publish_tf argument for launch file
 * Change to load model only if use rviz
