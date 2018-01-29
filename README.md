@@ -117,4 +117,6 @@ You can see the model of ADIS16470 breakout board in rviz panel.
   <img src="doc/ADXL345_Connection.jpg" width="60%"/>
 </div>
 
-(To be filled)
+The ADXL345 is a small, thin, low power, 3-axis accelerometer with
+high resolution (13-bit) measurement at up to ±16g. At this moment,
+support for this device is experimental.
