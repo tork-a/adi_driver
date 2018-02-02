@@ -15,7 +15,7 @@ echo "- user: k-okada" >> ~/.config/hub
 echo "  oauth_token: $GITHUB_ACCESS_TOKEN" >> ~/.config/hub
 
 files=''
-for file in $CIRCLE_ARTIFACTS/*-$CIRCLE_TAG.pdf ; do 
+for file in $CIRCLE_ARTIFACTS/*-$CIRCLE_TAG.pdf $CIRCLE_ARTIFACTS/*.deb ; do
     files="$files -a $file"
 done
 
