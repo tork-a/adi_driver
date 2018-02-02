@@ -2,6 +2,22 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix deb path (`#8 <https://github.com/tork-a/adi_driver/issues/8>`_)
+* workaround for run_tests on installed space (`#7 <https://github.com/tork-a/adi_driver/issues/7>`_)
+  * enable deb build
+  * add rosdoc.yaml
+  * add .github_release.sh
+  * Change photo of the sensor
+  * Add author to package.xml (`#5 <https://github.com/tork-a/adi_driver/issues/5>`_)
+  * Add urdf to install (`#5 <https://github.com/tork-a/adi_driver/issues/5>`_)
+  * add roslaunch-check with_rviz:=true with_plot:=true
+  * install test directory
+  * workaround for run_tests on installed space
+* Add adxl345 descrption into README.md (`#4 <https://github.com/tork-a/adi_driver/issues/4>`_)
+* Contributors: Ryosuke Tajima, Tokyo Opensource Robotics Developer 534
+
 1.0.0 (2018-01-21)
 ------------------
 * note that you need to restart after addgroup (`#3 <https://github.com/tork-a/adi_driver/issues/3>`_)
