@@ -29,6 +29,10 @@ install(DIRECTORY launch test urdf
   USE_SOURCE_PERMISSIONS
   )
 
+install(DIRECTORY urdf
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  )
+
 if(CATKIN_ENABLE_TESTING)
   find_package(catkin REQUIRED COMPONENTS rostest roslaunch)
   file(GLOB LAUNCH_FILES launch/*.launch)
