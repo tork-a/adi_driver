@@ -2,8 +2,8 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2018-02-02)
+------------------
 * fix deb path (`#8 <https://github.com/tork-a/adi_driver/issues/8>`_)
 * workaround for run_tests on installed space (`#7 <https://github.com/tork-a/adi_driver/issues/7>`_)
   * enable deb build
