@@ -46,6 +46,11 @@ test:
     ##
     - . /opt/ros/$ROS_DISTRO/setup.bash && cd ~/catkin_ws && catkin_make --pkg $CIRCLE_PROJECT_REPONAME --make-args docbuild_$CIRCLE_PROJECT_REPONAME
     - find -L ~/catkin_ws/ -iname '*.pdf' -exec cp {} $CIRCLE_ARTIFACTS \;
+    ##
+    # deb build
+    - sudo apt-get install -y -q python-bloom
+    - . /opt/ros/$ROS_DISTRO/setup.bash && cd ~/catkin_ws && catkin_make --pkg $CIRCLE_PROJECT_REPONAME --make-args debbuild_$CIRCLE_PROJECT_REPONAME
+    - find -L ~/catkin_ws/ -iname '*.deb' -exec cp {} $CIRCLE_ARTIFACTS \;
 
 deployment:
   release:
