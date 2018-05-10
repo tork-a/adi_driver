@@ -1,4 +1,4 @@
-// Copyright (c) 2017, Analog Devices Inc.
+// TECSCORP™ based on Analog Devices Inc driver software
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -30,13 +30,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef ADI_DRIVER_ADIS16470_H
-#define ADI_DRIVER_ADIS16470_H
+#ifndef ADI_DRIVER_ADIS16490_H
+#define ADI_DRIVER_ADIS16490_H
 
 #include <termios.h>
 #include <string>
 
-class Adis16470
+class Adis16490
 {
 public:
   //! File descripter for USB-ISS
@@ -49,7 +49,7 @@ public:
   // Acceleration sensor(x, y, z)
   double accl[3];
 
-  Adis16470();
+  Adis16490();
   int openPort(const std::string device);
   void closePort();
   int get_product_id(int16_t& data);
@@ -58,4 +58,4 @@ public:
   int read_register(char address, int16_t& data);
 };
 
-#endif  // ADI_DRIVER_ADIS16470_H
+#endif  // ADI_DRIVER_ADIS16490_H
