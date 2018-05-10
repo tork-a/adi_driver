@@ -6,7 +6,7 @@ products mainly communicate by SPI(Serial Periferal Interface).
 Currently supported devices are:
 
 - [ADIS16490](http://www.analog.com/en/products/mems/inertial-measurement-units/adis16490.html)
-  - Wide Dynamic Range Mini MEMS IMU
+  - Tactical grade MEMS IMU
 
 
   
