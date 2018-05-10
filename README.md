@@ -44,12 +44,3 @@ You can use
 [Breakout board](http://www.analog.com/en/design-center/evaluation-hardware-and-software/evaluation-boards-kits/EVAL-ADIS16470.html)
 for easy use.
 
-### Connection
-
-<div align="center">
-  <img src="doc/ADIS16470_Connection.jpg" width="60%"/>
-</div>
-
-You need to build a flat cable to connect the USB-clip and the
-ADIS16490 breakout board. The picture shows a implementation.
-
