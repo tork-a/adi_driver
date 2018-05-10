@@ -8,9 +8,9 @@
   <arg name="rate" default="100"/>
   <arg name="publish_tf" default="true"/>
 
-  <param if="$(arg with_rviz)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find adi_driver)/urdf/adis16470_breakout.urdf'" />
+  <param if="$(arg with_rviz)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find adi_driver)/urdf/adis16490_breakout.urdf'" />
 
-  <node name="imu" pkg="adi_driver" type="adis16470_node">
+  <node name="imu" pkg="adi_driver" type="adis16490_node">
     <param name="device" value="$(arg device)"/>
     <param name="frame_id" value="$(arg frame_id)"/>
     <param name="burst_mode" value="$(arg burst_read)"/>
@@ -34,6 +34,6 @@
   </group>
 
   <!-- Connect sensors before tests -->
-  <test test-name="test_adis16470" pkg="adi_driver" type="test_adis16470.py"/>
+  <test test-name="test_adis16490" pkg="adi_driver" type="test_adis16490.py"/>
   
 </launch>
