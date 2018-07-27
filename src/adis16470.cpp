@@ -53,6 +53,17 @@ int16_t big_endian_to_short(unsigned char *data)
 }
 
 /**
+ * @brief change big endian 2 byte into short
+ * @param data Head pointer to the data
+ * @retrun converted value
+ */
+void short_to_big_endian(unsigned char *buff, int16_t data)
+{
+  buff[0] = data >> 8;
+  buff[1] = data & 0x00ff;
+}
+
+/**
  * @brief Constructor
  */
 Adis16470::Adis16470()
@@ -219,6 +230,45 @@ int Adis16470::read_register(char address, int16_t& data)
 }
 
 /**
+ * @brief Write data to the register
+ * @param address Register address
+ * @retval 0 Success
+ * @retval -1 Failed
+ * 
+ * - Adress is the first byte of actual address.
+ * - Specify data at the adress.
+ */
+int Adis16470::write_register(char address, int16_t& data)
+{
+  unsigned char buff[4] = {0x61, address, 0x00, 0x00};
+  short_to_big_endian(&buff[2], data);
+  int size = write(fd_, buff, sizeof(buff));
+  if (size != sizeof(buff))
+  {
+    perror("write_register");
+    return -1;
+  }
+  if (tcdrain(fd_) < 0)
+  {
+    perror("write_register");
+    return -1;
+  }
+  unsigned char recv_buff[4] = {0, 0, 0, 0};
+  size = read(fd_, recv_buff, sizeof(recv_buff));
+  if (size != sizeof(recv_buff))
+  {
+    perror("write_register");
+    return -1;
+  }
+  if (recv_buff[0] != 0xff)
+  {
+    perror("write_register: ACK error");
+    return -1;
+  }
+  return 0;
+}
+
+/**
  * @brief Update all information by bust read
  * @retval 0 Success
  * @retval -1 Failed
@@ -306,3 +356,17 @@ int Adis16470::update(void)
   }
   return 0;
 }
+
+/**
+ * @brief Bias correction update (GLOB_CMD)
+ * @retval 0 Success
+ * @retval -1 Failed
+ */
+int Adis16470::bias_correction_update(void)
+{
+  // Bit0: Bias correction update
+  int16_t data = 1;
+  write_register(0x68, data);
+}
+
+

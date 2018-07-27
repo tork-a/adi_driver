@@ -58,6 +58,8 @@ public:
   int update(void);
   int update_burst(void);
   int read_register(char address, int16_t& data);
+  int write_register(char address, int16_t& data);
+  int bias_correction_update(void);
 };
 
 #endif  // ADI_DRIVER_ADIS16470_H
