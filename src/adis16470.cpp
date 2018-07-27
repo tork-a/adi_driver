@@ -366,7 +366,7 @@ int Adis16470::bias_correction_update(void)
 {
   // Bit0: Bias correction update
   int16_t data = 1;
-  write_register(0x68, data);
+  return write_register(0x68, data);
 }
 
 

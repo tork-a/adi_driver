@@ -35,6 +35,7 @@
 #include "sensor_msgs/Imu.h"
 #include "sensor_msgs/Temperature.h"
 #include "adi_driver/adis16470.h"
+#include "std_srvs/Trigger.h"
 
 class ImuNode
 {
@@ -43,12 +44,27 @@ public:
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
   ros::Publisher temp_data_pub_;
+  ros::ServiceServer bias_srv_;
   std::string device_;
   std::string frame_id_;
   bool burst_mode_;
   bool publish_temperature_;
   double rate_;
 
+  bool bias_estimate (std_srvs::Trigger::Request &req,
+                      std_srvs::Trigger::Response &res)
+  {
+    ROS_INFO("bias_estimate");
+    if (imu.bias_correction_update() < 0)
+    {
+      res.success = false;
+      res.message = "Bias correction update failed";
+      return false;
+    }
+    res.success = true;
+    res.message = "Success";
+    return true;
+  }  
   explicit ImuNode(ros::NodeHandle nh)
     : node_handle_(nh)
   {
@@ -65,11 +81,15 @@ public:
     ROS_INFO("burst_mode: %s", (burst_mode_ ? "true": "false"));
     ROS_INFO("publish_temperature: %s", (publish_temperature_ ? "true": "false"));
 
+    // Data publisher
     imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
     if (publish_temperature_)
       {
         temp_data_pub_ = node_handle_.advertise<sensor_msgs::Temperature>("temperature", 100);
       }
+
+    // Bias estimate service
+    bias_srv_ = node_handle_.advertiseService("bias_estimate", &ImuNode::bias_estimate, this);
   }
 
   ~ImuNode()
