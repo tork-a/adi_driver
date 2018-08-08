@@ -11,7 +11,7 @@ hub version
 
 mkdir -p ~/.config/
 echo "github.com:" > ~/.config/hub
-echo "- user: k-okada" >> ~/.config/hub
+echo "- user: 7675t" >> ~/.config/hub
 echo "  oauth_token: $GITHUB_ACCESS_TOKEN" >> ~/.config/hub
 
 files=''
