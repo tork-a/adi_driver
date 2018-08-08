@@ -37,11 +37,17 @@ jobs:
           command: |
             source devel/setup.bash
             catkin build --catkin-make-args docbuild_adi_driver
+            mkdir -p artifacts
+            cp src/project/output/*.pdf artifacts/
       - run:
           name: deb
           command: |
             source devel/setup.bash
             catkin build --catkin-make-args debbuild_adi_driver
+            mkdir -p artifacts
+            cp src/*.deb artifacts/
+      - store_artifacts:
+          path: artifacts
       - persist_to_workspace:
           root: .
           paths:
@@ -57,7 +63,7 @@ jobs:
       - run:
           name: release
           command: |
-            echo "Release"
+            src/project/.github_release.sh
 
 workflows:
   version: 2
