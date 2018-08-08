@@ -6,8 +6,8 @@ jobs:
       - image: osrf/ros:kinetic-desktop
     steps:
       - run: apt update
-      - run: apt install -y git ssh
-      - run: apt install -y python-catkin-tools
+      - run: apt install -y git ssh python-pip python-catkin-tools python-bloom
+      - run: apt install -y debhelper
       - checkout:
           path: ~/catkin_ws/src/project
       - run:
@@ -29,6 +29,7 @@ jobs:
       - run:
           name: install tex
           command: |
+            pip install recommonmark
             apt install -y doxygen pandoc python-catkin-sphinx
             apt install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texlive-lang-cjk latexmk
       - run:
@@ -42,15 +43,21 @@ jobs:
             source devel/setup.bash
             catkin build --catkin-make-args debbuild_adi_driver
       - persist_to_workspace:
-          root: ~/catkin_ws
+          root: .
+          paths:
+            - .
 
   deploy:
+    working_directory: ~/catkin_ws
     docker:
       - image: osrf/ros:kinetic-desktop
     steps:
       - attach_workspace:
-          at: ~/
-      - run: echo "Release"
+          at: .
+      - run:
+          name: release
+          command: |
+            echo "Release"
 
 workflows:
   version: 2
