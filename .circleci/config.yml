@@ -1,8 +1,70 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/catkin_ws
     docker:
-      - image osrf/ros:kinetic-ros-base
+      - image: osrf/ros:kinetic-desktop
     steps:
-      - checkout
-      - run: echo "A first hello"
+      - run: apt update
+      - run: apt install -y git ssh
+      - run: apt install -y python-catkin-tools
+      - checkout:
+          path: ~/catkin_ws/src/project
+      - run:
+          name: rosdep
+          command: |
+            source /opt/ros/kinetic/setup.sh
+            catkin init
+            rosdep install -r -y --from-paths src --ignore-src
+      - run:
+          name: bulid
+          command: |
+            source /opt/ros/kinetic/setup.sh
+            catkin build --no-status --no-notify -j2 --mem-limit 3G
+      - run:
+          name: test
+          command: |
+            source devel/setup.bash
+            catkin run_tests
+      - run:
+          name: install tex
+          command: |
+            apt install -y doxygen pandoc python-catkin-sphinx
+            apt install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texlive-lang-cjk latexmk
+      - run:
+          name: doc
+          command: |
+            source devel/setup.bash
+            catkin build --catkin-make-args docbuild_adi_driver
+      - run:
+          name: deb
+          command: |
+            source devel/setup.bash
+            catkin build --catkin-make-args debbuild_adi_driver
+      - persist_to_workspace:
+          root: ~/catkin_ws
+
+  deploy:
+    docker:
+      - image: osrf/ros:kinetic-desktop
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: echo "Release"
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
