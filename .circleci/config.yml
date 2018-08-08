@@ -56,7 +56,7 @@ jobs:
   deploy:
     working_directory: ~/catkin_ws
     docker:
-      - image: osrf/ros:kinetic-desktop
+      - image: circleci/golang:1.8
     steps:
       - attach_workspace:
           at: .
