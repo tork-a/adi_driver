@@ -33,34 +33,38 @@
 #include <string>
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
+#include "sensor_msgs/Temperature.h"
 #include "adi_driver/adis16470.h"
 
 class ImuNode
 {
 public:
   Adis16470 imu;
+  ros::NodeHandle pnode_handle_;
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
+  ros::Publisher temp_data_pub_;
   std::string device_;
   std::string frame_id_;
   bool burst_mode_;
   double rate_;
 
-  explicit ImuNode(ros::NodeHandle nh)
-    : node_handle_(nh)
+  explicit ImuNode(ros::NodeHandle pnh, ros::NodeHandle nh)
+    : pnode_handle_(pnh), node_handle_(nh)
   {
     // Read parameters
-    node_handle_.param("device", device_, std::string("/dev/ttyACM0"));
-    node_handle_.param("frame_id", frame_id_, std::string("imu"));
-    node_handle_.param("burst_mode", burst_mode_, true);
-    node_handle_.param("rate", rate_, 100.0);
+    pnode_handle_.param("device", device_, std::string("/dev/ttyACM0"));
+    pnode_handle_.param("frame_id", frame_id_, std::string("imu"));
+    pnode_handle_.param("burst_mode", burst_mode_, true);
+    pnode_handle_.param("rate", rate_, 100.0);
 
     ROS_INFO("device: %s", device_.c_str());
     ROS_INFO("frame_id: %s", frame_id_.c_str());
     ROS_INFO("rate: %f [Hz]", rate_);
     ROS_INFO("burst_mode: %s", (burst_mode_ ? "true": "false"));
 
-    imu_data_pub_ = node_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
+    imu_data_pub_ = pnode_handle_.advertise<sensor_msgs::Imu>("data_raw", 100);
+    temp_data_pub_ = node_handle_.advertise<sensor_msgs::Temperature>("temperature", 100);
   }
 
   ~ImuNode()
@@ -115,6 +119,18 @@ public:
 
     imu_data_pub_.publish(data);
   }
+  int publish_temp_data()
+  {
+    sensor_msgs::Temperature data;
+    data.header.frame_id = frame_id_;
+    data.header.stamp = ros::Time::now();
+
+    // imu Temperature
+    data.temperature = 0;
+    data.variance = 0;
+    
+    temp_data_pub_.publish(data);
+  }
   bool spin()
   {
     ros::Rate loop_rate(rate_);
@@ -126,6 +142,7 @@ public:
         if (imu.update_burst() == 0)
         {
           publish_imu_data();
+          publish_temp_data();
         }
         else
         {
@@ -137,6 +154,7 @@ public:
         if (imu.update() == 0)
         {
           publish_imu_data();
+          publish_temp_data();
         }
         else
         {
@@ -153,8 +171,9 @@ public:
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "imu");
-  ros::NodeHandle nh("~");
-  ImuNode node(nh);
+  ros::NodeHandle pnh("~");
+  ros::NodeHandle nh("");
+  ImuNode node(pnh,nh);
 
   node.open();
   while (!node.is_opened())
