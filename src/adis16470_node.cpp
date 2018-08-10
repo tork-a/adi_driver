@@ -126,7 +126,7 @@ public:
     data.header.stamp = ros::Time::now();
 
     // imu Temperature
-    data.temperature = 0;
+    data.temperature = imu.temp;
     data.variance = 0;
     
     temp_data_pub_.publish(data);

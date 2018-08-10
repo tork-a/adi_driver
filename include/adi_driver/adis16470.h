@@ -48,6 +48,8 @@ public:
   double gyro[3];
   // Acceleration sensor(x, y, z)
   double accl[3];
+  // Temperature sensor
+  double temp;
 
   Adis16470();
   int openPort(const std::string device);
