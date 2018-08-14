@@ -226,7 +226,7 @@ int Adis16470::read_register(char address, int16_t& data)
  * - See burst read function at pp.14 
  * - Data resolution is 16 bit
  */
-int Adis16470::update_burst(bool publish_temp)
+int Adis16470::update_burst(void)
 {
   unsigned char buff[64] = {0};
   // 0x6800: Burst read function
@@ -269,10 +269,7 @@ int Adis16470::update_burst(bool publish_temp)
   // Z_ACCL_OUT
   accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
   // TEMP_OUT
-  if (publish_temp)
-  {
-      temp = big_endian_to_short(&buff[16]) * 0.1;
-  }
+  temp = big_endian_to_short(&buff[16]) * 0.1;
   return 0;
 }
 

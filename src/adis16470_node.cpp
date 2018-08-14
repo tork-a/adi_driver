@@ -144,7 +144,7 @@ public:
     {
       if (burst_mode_)
       {
-        if (imu.update_burst(publish_temperature_) == 0)
+        if (imu.update_burst() == 0)
         {
           publish_imu_data();
         }
@@ -167,7 +167,7 @@ public:
       }
       else if (burst_mode_ && publish_temperature_)
       {
-        if (imu.update_burst(publish_temperature_) == 0)
+        if (imu.update_burst() == 0)
         {
           publish_imu_data();
           publish_temp_data();
