@@ -56,7 +56,7 @@ public:
   void closePort();
   int get_product_id(int16_t& data);
   int update(void);
-  int update_burst(void);
+  int update_burst(bool publish_temp);
   int read_register(char address, int16_t& data);
 };
 

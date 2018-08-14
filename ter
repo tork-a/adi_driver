@@ -1,0 +1,68 @@
+* [33m38f1995[m read temperature in register
+* [33m7145a9d[m add temperature node
+* [33mada084f[m 1.0.1
+* [33m2b4dc0a[m update CHANGELOG
+*   [33m57ad146[m Merge pull request #8 from 534o/fix_debbuild
+[32m|[m[33m\[m  
+[32m|[m * [33m6be735b[m fix deb path
+[32m|[m[32m/[m  
+*   [33m8be5f7f[m Merge pull request #7 from 534o/fix_travis
+[34m|[m[35m\[m  
+[34m|[m * [33m739ab41[m enable deb build
+[34m|[m * [33m502e536[m add rosdoc.yaml
+[34m|[m * [33m8cc2376[m add .github_release.sh
+[34m|[m * [33mcf5dc0a[m Change photo of the sensor
+[34m|[m * [33m1eae806[m Add author to package.xml
+[34m|[m * [33m49b56b0[m Add urdf to install
+[34m|[m * [33m00414ce[m add roslaunch-check with_rviz:=true with_plot:=true
+[34m|[m * [33mb635077[m install test directory
+[34m|[m * [33m9fb926e[m workaround for run_tests on installed space
+* [35m|[m   [33m903bae4[m Merge pull request #4 from tork-a/prepare_for_advatise
+[35m|[m[1;31m\[m [35m\[m  
+[35m|[m [1;31m|[m[35m/[m  
+[35m|[m[35m/[m[1;31m|[m   
+[35m|[m * [33mff7a80e[m Add adxl345 descrption into README.md
+[35m|[m[35m/[m  
+* [33m7415fdf[m 1.0.0
+* [33mdf8db81[m update CHANGELOG
+*   [33m3808c83[m Merge pull request #3 from tork-a/534o-patch-1
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33mae8f01b[m Update index.rst
+[1;32m|[m[1;32m/[m  
+* [33m53e10a5[m Add publish_tf argument for launch file
+* [33mae08ded[m Change to load model only if use rviz
+* [33m6f4b05d[m Update index.rst
+* [33mceb945e[m Fix schematics, add documents
+*   [33m7843592[m Merge pull request #2 from tork-a/add_doc
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [33m83d0ef6[m add circle.yml
+[1;34m|[m * [33m89e0461[m add docbuild command to CMakeLists.txt
+[1;34m|[m[1;34m/[m  
+* [33m1b7c024[m Update index.rst contents
+* [33m2401447[m Put travis badge.
+* [33m63d076b[m 0.0.1
+*   [33mb954e51[m Merge pull request #1 from 7675t/master
+[1;36m|[m[31m\[m  
+[1;36m|[m * [33m4e9b7f7[m Update changelog
+[1;36m|[m * [33m0a7dd00[m Add index.rst
+[1;36m|[m * [33mb747221[m Add changelog
+[1;36m|[m * [33me3323d7[m Fix build errors
+[1;36m|[m * [33mf69f9ee[m Remove all error of roslint
+[1;36m|[m * [33m03cb7a8[m Add roslint settings
+[1;36m|[m * [33mc9542ed[m Adjust header inclusion
+[1;36m|[m * [33m56806ab[m Add loop rate parameter
+[1;36m|[m * [33m2256965[m Refactor adis16470 code
+[1;36m|[m * [33m830efbe[m Add and change copyrights
+[1;36m|[m * [33m56bf097[m Change copyright representation
+[1;36m|[m * [33mb53c0ff[m Change test more practical
+[1;36m|[m *   [33m40b4302[m Merge pull request #1 from 534o/534o/master
+[1;36m|[m [32m|[m[33m\[m  
+[1;36m|[m [32m|[m * [33m2749622[m add xacro to pakcage.xml
+[1;36m|[m [32m|[m * [33mcd380c1[m add rviz, imu_filter_madgwick to pakcage.xml
+[1;36m|[m [32m|[m * [33m46886ce[m fix layout in package.xml
+[1;36m|[m [32m|[m * [33m287021f[m add rqt_plot to package.xml
+[1;36m|[m [32m|[m * [33m6448a39[m add .travis.yml, using generate_prerelease_script.py
+[1;36m|[m [32m|[m[32m/[m  
+[1;36m|[m * [33md033544[m First commit from original prototype
+[1;36m|[m[1;36m/[m  
+* [33m6c15401[m Initial commit
