@@ -1,0 +1,83 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/catkin_ws
+    docker:
+      - image: osrf/ros:kinetic-desktop
+    steps:
+      - run: apt update
+      - run: apt install -y git ssh python-pip python-catkin-tools python-bloom
+      - run: apt install -y debhelper
+      - checkout:
+          path: ~/catkin_ws/src/project
+      - run:
+          name: rosdep
+          command: |
+            source /opt/ros/kinetic/setup.sh
+            catkin init
+            rosdep install -r -y --from-paths src --ignore-src
+      - run:
+          name: bulid
+          command: |
+            source /opt/ros/kinetic/setup.sh
+            catkin build --no-status --no-notify -j2 --mem-limit 3G
+      - run:
+          name: test
+          command: |
+            source devel/setup.bash
+            catkin run_tests
+      - run:
+          name: install tex
+          command: |
+            pip install recommonmark
+            apt install -y doxygen pandoc python-catkin-sphinx
+            apt install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texlive-lang-cjk latexmk
+      - run:
+          name: doc
+          command: |
+            source devel/setup.bash
+            catkin build --catkin-make-args docbuild_adi_driver
+            mkdir -p artifacts
+            cp src/project/output/*.pdf artifacts/
+      - run:
+          name: deb
+          command: |
+            source devel/setup.bash
+            catkin build --catkin-make-args debbuild_adi_driver
+            mkdir -p artifacts
+            cp src/*.deb artifacts/
+      - store_artifacts:
+          path: artifacts
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  deploy:
+    working_directory: ~/catkin_ws
+    docker:
+      - image: osrf/ros:kinetic-desktop
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: release
+          command: |
+            src/project/.github_release.sh
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
