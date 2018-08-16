@@ -36,7 +36,7 @@ if(CATKIN_ENABLE_TESTING)
     message(STATUS "Testing ${LAUNCH_FILE}")
     roslaunch_add_file_check(${LAUNCH_FILE})
   endforeach()
-  roslaunch_add_file_check(launch/adis16470.launch with_rviz:=true with_plot:=true)
+  roslaunch_add_file_check(launch/adis16470.launch with_rviz:=true with_plot:=true publish_temperature:=true)
 endif()
 
 roslint_cpp()

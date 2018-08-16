@@ -34,7 +34,7 @@ import rospy
 import rostest
 import time
 from collections import deque
-from sensor_msgs.msg import Imu
+from sensor_msgs.msg import Imu, Temperature
 
 def imu_get_min(imu, a, b):
     imu.angular_velocity.x = min(a.angular_velocity.x, b.angular_velocity.x)
@@ -60,10 +60,13 @@ class TestImu(unittest.TestCase):
     def setUp(self):
         self.imu_raw_count = 0
         self.imu_count = 0
+        self.temperature_count = 0
         self.imu_raw_data = deque(maxlen=100)
         self.imu_data = deque(maxlen=100)
+        self.temperature_data = deque(maxlen=100)
         rospy.Subscriber('/imu/data_raw', Imu, self.cb_imu_raw, queue_size=1000)
         rospy.Subscriber('/imu/data', Imu, self.cb_imu, queue_size=1000)
+        rospy.Subscriber('/imu/temperature', Temperature, self.cb_temperature, queue_size=1000)
         
     def cb_imu_raw(self, msg):
         self.imu_raw_count += 1
@@ -100,6 +103,10 @@ class TestImu(unittest.TestCase):
             accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
             self.assertTrue(accl > 8.0)
             self.assertTrue(accl < 11.0)
+
+    def cb_temperature(self, msg):
+        self.temperature_count += 1
+        self.temperature_data.append(msg)
             
     def test_imu(self):
         time.sleep(1.0)
@@ -125,6 +132,18 @@ class TestImu(unittest.TestCase):
             self.assertTrue(accl > 8.0)
             self.assertTrue(accl < 11.0)
 
+    def test_temperature(self):
+        time.sleep(1.0)
+        # Check data count
+        self.assertTrue(self.temperature_count>0, 'No data received from /imu/temperature')
+
+        # Check temperature
+        for msg in self.temperature_data:
+            # It fails in really hot environment
+            self.assertTrue(msg.temperature < 50)
+            # It fails in the arctic
+            self.assertTrue(msg.temperature > 0)
+            
 if __name__ == '__main__':
     rostest.rosrun('adi_driver', 'test_adi_driver', TestImu)
         
