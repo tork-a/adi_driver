@@ -2,6 +2,21 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add bias estimation service(`#13 <https://github.com/tork-a/adi_driver/issues/13>`_)
+  - Add function for bias estimation
+  - Add bias estimation time function
+  - Remove unnecessary depens on imu_tools
+* Add temperature topic(`#17 <https://github.com/tork-a/adi_driver/issues/17>`_)
+  - Add topic description to README.md
+  - Add mutex lock for data queues in the test script
+  - Add test for temperature publishing
+* Add circleci badge(`#18 <https://github.com/tork-a/adi_driver/issues/18>`_)
+* Adaptation for Circleci 2.0(`#16 <https://github.com/tork-a/adi_driver/issues/16>`_)
+  - Add circleci v2.0 config file
+* Contributors: Kazuki Takao, Ryosuke Tajima
+
 1.0.1 (2018-02-02)
 ------------------
 * fix deb path (`#8 <https://github.com/tork-a/adi_driver/issues/8>`_)
