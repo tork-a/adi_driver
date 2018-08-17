@@ -8,6 +8,7 @@
   <arg name="publish_temperature" default="false"/>
   <arg name="rate" default="100"/>
   <arg name="publish_tf" default="true"/>
+  <arg name="publish_debug_topics" default="false"/>
 
   <param if="$(arg with_rviz)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find adi_driver)/urdf/adis16470_breakout.urdf'" />
 
@@ -23,6 +24,7 @@
 	name="imu_filter" pkg="imu_filter_madgwick" type="imu_filter_node">
     <param name="use_mag" value="false"/>
     <param name="publish_tf" value="$(arg publish_tf)"/>
+    <param name="publish_debug_topics" value="$(arg publish_debug_topics)"/>
   </node>
 
   <node if="$(arg with_rviz)"
