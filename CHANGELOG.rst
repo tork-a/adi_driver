@@ -2,8 +2,8 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2018-08-17)
+------------------
 * Add bias estimation service(`#13 <https://github.com/tork-a/adi_driver/issues/13>`_)
   - Add function for bias estimation
   - Add bias estimation time function
