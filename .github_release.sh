@@ -11,11 +11,11 @@ hub version
 
 mkdir -p ~/.config/
 echo "github.com:" > ~/.config/hub
-echo "- user: k-okada" >> ~/.config/hub
+echo "- user: 7675t" >> ~/.config/hub
 echo "  oauth_token: $GITHUB_ACCESS_TOKEN" >> ~/.config/hub
 
 files=''
-for file in artifacts/*-$CIRCLE_TAG.pdf artifacts/*.deb ; do
+for file in ~/catkin_ws/artifacts/*-$CIRCLE_TAG.pdf ~/catkin_ws/artifacts/*.deb ; do
     files="$files -a $file"
 done
 
