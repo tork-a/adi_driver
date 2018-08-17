@@ -105,6 +105,25 @@ You can see the model of ADIS16470 breakout board in rviz panel.
   <img src="doc/img_rviz.png" width="60%"/>
 </div>
 
+### Topics
+
+- /imu/data_raw (sensor_msgs/Imu)
+
+  IMU raw output. It contains angular velocities and linear
+  accelerations. The orientation is always unit quaternion.
+
+- /imu/data (sensor_msgs/Imu)
+
+  IMU filtered output by `imu_filter_madgwick`. It contains angular
+  velocities and linear accelerations. The orientation is always unit
+  quaternion.
+
+- /imu/temperature (sensor_msgs/Temperature)
+
+  Temperature of the IMU. To publish this message, you need to set
+  true the parameter named 'publish_temperature'. See sample launch
+  file.
+
 ## ADXL345
 
 ### Overview

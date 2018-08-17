@@ -268,7 +268,8 @@ int Adis16470::update_burst(void)
   accl[1] = big_endian_to_short(&buff[13]) * M_PI / 180 / 10.0;
   // Z_ACCL_OUT
   accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
-
+  // TEMP_OUT
+  temp = big_endian_to_short(&buff[16]) * 0.1;
   return 0;
 }
 
@@ -277,7 +278,7 @@ int Adis16470::update_burst(void)
  */
 int Adis16470::update(void)
 {
-  int16_t gyro_out[3], gyro_low[3], accl_out[3], accl_low[3];
+  int16_t gyro_out[3], gyro_low[3], accl_out[3], accl_low[3], temp_out;
 
   read_register(0x04, gyro_low[0]);
   read_register(0x06, gyro_low[0]);
@@ -291,8 +292,12 @@ int Adis16470::update(void)
   read_register(0x16, accl_low[1]);
   read_register(0x18, accl_out[1]);
   read_register(0x1a, accl_low[2]);
-  read_register(0x00, accl_out[2]);
+  read_register(0x1c, accl_out[2]);
+  read_register(0x00, temp_out);
 
+  // temperature convert
+  temp = temp_out * 0.1;
+  
   // 32bit convert
   for (int i=0; i < 3; i++)
   {

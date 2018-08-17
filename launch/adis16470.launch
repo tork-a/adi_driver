@@ -5,6 +5,7 @@
   <arg name="device" default="/dev/ttyACM0"/>
   <arg name="frame_id" default="imu"/>
   <arg name="burst_read" default="false"/>
+  <arg name="publish_temperature" default="false"/>
   <arg name="rate" default="100"/>
   <arg name="publish_tf" default="true"/>
 
@@ -14,6 +15,7 @@
     <param name="device" value="$(arg device)"/>
     <param name="frame_id" value="$(arg frame_id)"/>
     <param name="burst_mode" value="$(arg burst_read)"/>
+    <param name="publish_temperature" value="$(arg publish_temperature)"/>
     <param name="rate" value="$(arg rate)"/>
   </node>
 

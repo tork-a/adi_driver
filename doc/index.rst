@@ -274,6 +274,7 @@ This launch file has several arguments which configure the system.
   ``imu``
 - ``burst_read``: If true, the sensor node uses the ``burst read
   mode`` which is on the `ADIS16470`_ 's manual. Default is ``false``.
+- ``publish_temperature``: if true, Add temperature topic to the sensor node. Default is ``false``.
 - ``rate``: It define the sampling rate of the IMU in Hz. Default
 is 100.
 
@@ -295,7 +296,21 @@ topics. You can see the list of the ROS topic by ``rostopic`` command.
   /rosout_agg
   /tf
 
-The sensor data are on these two topics:
+If ``publish_temperature`` is enable, the sensor data keep publish on ROS topics.
+
+.. code-block:: bash
+
+  $ rostopic list
+  /imu/data
+  /imu/data_raw
+  /imu/temperature
+  /imu_filter/parameter_descriptions
+  /imu_filter/parameter_updates
+  /rosout
+  /rosout_agg
+  /tf
+
+The sensor data are on these three topics:
   
 - ``/imu/data_raw``: The raw sensor data from ADIS16470, which
   contains only angular velocities and linear accelerations.
@@ -304,6 +319,9 @@ The sensor data are on these two topics:
   ``imu_filter_node`` from ``imu_filter_madgwick`` package. It
   contains orientation information in addition to the angular
   velocities and linear accelerations.
+
+- ``/imu/temperature``: The raw sensor data from ADIS16470, which
+  contains only tenmerature.
 
 Check sensor data
 =================
@@ -338,6 +356,20 @@ You can see the sensor data streaming by ``rostopic`` command.
    linear_acceleration_covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
    ---
 
+.. code-block:: bash
+
+   $ rostopic echo /imu/temperature
+   ---
+   header:
+   seq: 1034
+   stamp:
+   secs: 1534235429
+   nsecs:  78690087
+   frame_id: "imu"
+   temperature: 30.8
+   variance: 0.0
+   ---
+
 Type of the sensor data
 =======================
 
@@ -346,7 +378,7 @@ Type of the sensor data
 .. code-block:: bash
 
    $ rosmsg show sensor_msgs/Imu
-   
+
    std_msgs/Header header
        uint32 seq
        time stamp
@@ -367,6 +399,19 @@ Type of the sensor data
        float64 y
        float64 z
        float64[9] linear_acceleration_covariance
+
+``sensor_msgs/Temperature`` is the sensor message type for IMUs.
+
+.. code-block:: bash
+
+   $ rosmsg show sensor_msgs/Temperature
+   
+   std_msgs/Header header
+       uint32 seq
+       time stamp
+       string frame_id
+       float64 temperature
+       float64 variance
 
 Visulaization
 =============
