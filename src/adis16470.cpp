@@ -30,6 +30,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "ros/ros.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -238,10 +239,16 @@ int Adis16470::read_register(char address, int16_t& data)
  * - Adress is the first byte of actual address.
  * - Specify data at the adress.
  */
-int Adis16470::write_register(char address, int16_t& data)
+int Adis16470::write_register(char address, int16_t data)
 {
-  unsigned char buff[4] = {0x61, address, 0x00, 0x00};
-  short_to_big_endian(&buff[2], data);
+  unsigned char buff[5] = {0x61, 0x00, 0x00, 0x00, 0x00};
+  // Set R~/W bit 1
+  buff[1] = address | 0x80;
+  buff[3] = (address + 1) | 0x80;
+  // Set data
+  buff[2] = data & 0xff;
+  buff[4] = data >> 8;
+
   int size = write(fd_, buff, sizeof(buff));
   if (size != sizeof(buff))
   {
@@ -253,7 +260,7 @@ int Adis16470::write_register(char address, int16_t& data)
     perror("write_register");
     return -1;
   }
-  unsigned char recv_buff[4] = {0, 0, 0, 0};
+  unsigned char recv_buff[5] = {0, 0, 0, 0, 0};
   size = read(fd_, recv_buff, sizeof(recv_buff));
   if (size != sizeof(recv_buff))
   {
@@ -358,6 +365,22 @@ int Adis16470::update(void)
 }
 
 /**
+ * @brief set bias estimating time (GLOB_CMD)
+ * @retval 0 Success
+ * @retval -1 Failed
+ */
+int Adis16470::set_bias_estimation_time(int16_t tbc)
+{
+  write_register(0x66, tbc);
+  tbc = 0;
+  int16_t dummy = 0;
+  read_register(0x66, dummy);
+  read_register(0x00, tbc);
+  ROS_INFO("TBC: %04x", tbc);
+  return 0;
+}
+
+/**
  * @brief Bias correction update (GLOB_CMD)
  * @retval 0 Success
  * @retval -1 Failed
@@ -366,7 +389,7 @@ int Adis16470::bias_correction_update(void)
 {
   // Bit0: Bias correction update
   int16_t data = 1;
-  return write_register(0x68, data);
+  write_register(0x68, data);
 }
 
 

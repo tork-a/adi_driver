@@ -64,7 +64,8 @@ public:
     res.success = true;
     res.message = "Success";
     return true;
-  }  
+  }
+  
   explicit ImuNode(ros::NodeHandle nh)
     : node_handle_(nh)
   {
@@ -119,7 +120,9 @@ public:
     int16_t pid = 0;
     imu.get_product_id(pid);
     ROS_INFO("Product ID: %x\n", pid);
+    imu.set_bias_estimation_time(0x070a);
   }
+  
   int publish_imu_data()
   {
     sensor_msgs::Imu data;
