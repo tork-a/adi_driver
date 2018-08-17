@@ -35,6 +35,7 @@ import rostest
 import time
 from collections import deque
 from sensor_msgs.msg import Imu, Temperature
+import threading
 
 def imu_get_min(imu, a, b):
     imu.angular_velocity.x = min(a.angular_velocity.x, b.angular_velocity.x)
@@ -58,6 +59,7 @@ class TestImu(unittest.TestCase):
         rospy.init_node('test_imu')
 
     def setUp(self):
+        self.lock = threading.Lock()
         self.imu_raw_count = 0
         self.imu_count = 0
         self.temperature_count = 0
@@ -70,11 +72,13 @@ class TestImu(unittest.TestCase):
         
     def cb_imu_raw(self, msg):
         self.imu_raw_count += 1
-        self.imu_raw_data.append(msg)
+        with self.lock:
+            self.imu_raw_data.append(msg)
 
     def cb_imu(self, msg):
         self.imu_count += 1
-        self.imu_data.append(msg)
+        with self.lock:
+            self.imu_data.append(msg)
 
     def test_imu_raw(self):
         time.sleep(1.0)
@@ -82,31 +86,35 @@ class TestImu(unittest.TestCase):
         self.assertTrue(self.imu_raw_count>0, 'No data received from /imu/data_raw')
 
         # Check orientation
-        for imu in self.imu_raw_data:
-            self.assertAlmostEqual(imu.orientation.x, 0)
-            self.assertAlmostEqual(imu.orientation.y, 0)
-            self.assertAlmostEqual(imu.orientation.z, 0)
-            self.assertAlmostEqual(imu.orientation.w, 1)
-            for cov in imu.orientation_covariance:
-                self.assertAlmostEqual(cov, 0)
+        with self.lock:
+            for imu in self.imu_raw_data:
+                self.assertAlmostEqual(imu.orientation.x, 0)
+                self.assertAlmostEqual(imu.orientation.y, 0)
+                self.assertAlmostEqual(imu.orientation.z, 0)
+                self.assertAlmostEqual(imu.orientation.w, 1)
+                for cov in imu.orientation_covariance:
+                    self.assertAlmostEqual(cov, 0)
 
         # Check angular velocity
-        for imu in self.imu_raw_data:
-            self.assertTrue(abs(imu.angular_velocity.x) < 0.1);
-            self.assertTrue(abs(imu.angular_velocity.y) < 0.1);
-            self.assertTrue(abs(imu.angular_velocity.z) < 0.1);
-            for cov in imu.angular_velocity_covariance:
-                self.assertAlmostEqual(cov, 0)
+        with self.lock:
+            for imu in self.imu_raw_data:
+                self.assertTrue(abs(imu.angular_velocity.x) < 0.1);
+                self.assertTrue(abs(imu.angular_velocity.y) < 0.1);
+                self.assertTrue(abs(imu.angular_velocity.z) < 0.1);
+                for cov in imu.angular_velocity_covariance:
+                    self.assertAlmostEqual(cov, 0)
 
         # Check linear_acceleration with gravity (CAUTION: test will fail in space)
-        for imu in self.imu_raw_data:
-            accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
-            self.assertTrue(accl > 8.0)
-            self.assertTrue(accl < 11.0)
+        with self.lock:
+            for imu in self.imu_raw_data:
+                accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
+                self.assertTrue(accl > 8.0)
+                self.assertTrue(accl < 11.0)
 
     def cb_temperature(self, msg):
         self.temperature_count += 1
-        self.temperature_data.append(msg)
+        with self.lock:
+            self.temperature_data.append(msg)
             
     def test_imu(self):
         time.sleep(1.0)
@@ -114,35 +122,41 @@ class TestImu(unittest.TestCase):
         self.assertTrue(self.imu_count>0, 'No data received from /imu/data')
 
         # Check orientation
-        for imu in self.imu_data:
-            quat = math.sqrt(imu.orientation.x**2 + imu.orientation.y**2 + imu.orientation.z**2 + imu.orientation.w**2)
-            self.assertAlmostEqual(quat, 1, delta=0.001)
+        with self.lock:
+            for imu in self.imu_data:
+                quat = math.sqrt(imu.orientation.x**2 + imu.orientation.y**2 + imu.orientation.z**2 + imu.orientation.w**2)
+                self.assertAlmostEqual(quat, 1, delta=0.001)
 
         # Check angular velocity
-        for imu in self.imu_data:
-            self.assertTrue(abs(imu.angular_velocity.x) < 0.1);
-            self.assertTrue(abs(imu.angular_velocity.y) < 0.1);
-            self.assertTrue(abs(imu.angular_velocity.z) < 0.1);
-            for cov in imu.angular_velocity_covariance:
-                self.assertAlmostEqual(cov, 0)
+        with self.lock:
+            for imu in self.imu_data:
+                self.assertTrue(abs(imu.angular_velocity.x) < 0.1);
+                self.assertTrue(abs(imu.angular_velocity.y) < 0.1);
+                self.assertTrue(abs(imu.angular_velocity.z) < 0.1);
+                for cov in imu.angular_velocity_covariance:
+                    self.assertAlmostEqual(cov, 0)
 
         # Check linear_acceleration with gravity (CAUTION: test will fail in space)
-        for imu in self.imu_data:
-            accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
-            self.assertTrue(accl > 8.0)
-            self.assertTrue(accl < 11.0)
+        with self.lock:
+            for imu in self.imu_data:
+                accl = math.sqrt(imu.linear_acceleration.x**2 + imu.linear_acceleration.y**2 + imu.linear_acceleration.z**2)
+                self.assertTrue(accl > 8.0)
+                self.assertTrue(accl < 11.0)
 
     def test_temperature(self):
         time.sleep(1.0)
         # Check data count
-        self.assertTrue(self.temperature_count>0, 'No data received from /imu/temperature')
+        self.assertTrue(
+            self.temperature_count > 0,
+            'No data received from /imu/temperature')
 
         # Check temperature
-        for msg in self.temperature_data:
-            # It fails in really hot environment
-            self.assertTrue(msg.temperature < 50)
-            # It fails in the arctic
-            self.assertTrue(msg.temperature > 0)
+        with self.lock:
+            for msg in self.temperature_data:
+                # It fails in really hot environment
+                self.assertTrue(msg.temperature < 50)
+                # It fails in the arctic
+                self.assertTrue(msg.temperature > 0)
             
 if __name__ == '__main__':
     rostest.rosrun('adi_driver', 'test_adi_driver', TestImu)
