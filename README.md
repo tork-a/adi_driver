@@ -133,7 +133,7 @@ You can see the model of ADIS16470 breakout board in rviz panel.
   steady for at least 40 seconds. The bias value of the gyro sensors
   are calcuarated as the average of the duration. The sensor value are
   obtained after it is substracted by the bias value. The bias value
-  is not stored on the chip and reset when the powered up.
+  is stored on the chip and cleared when it powered up or reset.
 
 ## ADXL345
 
