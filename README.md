@@ -123,6 +123,17 @@ You can see the model of ADIS16470 breakout board in rviz panel.
   Temperature of the IMU. To publish this message, you need to set
   true the parameter named 'publish_temperature'. See sample launch
   file.
+  
+### Service
+
+- /imu/bias_estimate
+
+  This service activate ADIS16470's internal bias estimation
+  function. You should call this service after the IMU is placed
+  steady for at least 40 seconds. The bias value of the gyro sensors
+  are calcuarated as the average of the duration. The sensor value are
+  obtained after it is substracted by the bias value. The bias value
+  is stored on the chip and cleared when it powered up or reset.
 
 ## ADXL345
 
