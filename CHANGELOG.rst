@@ -2,6 +2,15 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Change to depend on imu_tools(`#19 <https://github.com/tork-a/adi_driver/issues/19>`_)
+  - Depend on imu_filter_madgwick and rviz_imu_plugin
+* Add bias estimation service document(`#20 <https://github.com/tork-a/adi_driver/issues/20>`_)
+  - Update README.md
+  - Fix incorrect sentence.
+* Contributors: Ryosuke Tajima
+
 1.0.2 (2018-08-17)
 ------------------
 * Add bias estimation service(`#13 <https://github.com/tork-a/adi_driver/issues/13>`_)
