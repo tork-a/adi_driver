@@ -2,8 +2,8 @@
 Changelog for package adi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2018-11-12)
+------------------
 * Change to depend on imu_tools(`#19 <https://github.com/tork-a/adi_driver/issues/19>`_)
   - Depend on imu_filter_madgwick and rviz_imu_plugin
 * Add bias estimation service document(`#20 <https://github.com/tork-a/adi_driver/issues/20>`_)
