@@ -17,6 +17,7 @@ target_link_libraries(adis16495_node ${catkin_LIBRARIES})
 add_executable(adxl345_node src/adxl345_node.cpp src/adxl345.cpp)
 target_link_libraries(adxl345_node ${catkin_LIBRARIES})
 
+#Add adis16495_node
 install(TARGETS adis16470_node adxl345_node adis16495_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

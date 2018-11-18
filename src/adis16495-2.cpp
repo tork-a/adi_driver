@@ -250,7 +250,7 @@ int Adis16495::read_register(char address, int16_t& data)	//Change name
  * - Specify data at the adress.
  */
 //int Adis16470::write_register(char address, int16_t data)
-int Adis16495::write_register(char address, int16_t data)	//Change name
+int Adis16495::write_register(char address, int16_t data) //
 {
   unsigned char buff[5] = {0x61, 0x00, 0x00, 0x00, 0x00};
   // Set R~/W bit 1
