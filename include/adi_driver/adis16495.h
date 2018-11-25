@@ -52,7 +52,8 @@ public:
   double gyro[3];
   // Acceleration sensor(x, y, z)
   double accl[3];
-  double temp; 					//add
+
+  double temp; 					//Add temp
 
   //Adis16470();
   Adis16495();					//Change name
@@ -62,9 +63,10 @@ public:
   int update(void);
   int update_burst(void);
   int read_register(char address, int16_t& data);
-  int write_register(char address, int16_t data);	//add
-  int set_bias_estimation_time(int16_t tbc); 		//add
-  int bias_correction_update(void);
+
+  int write_register(char address, int16_t data);	//Add function
+  int set_bias_estimation_time(int16_t tbc); 		//Add funciton
+  int bias_correction_update(void);			//Add function
   
 };
 
