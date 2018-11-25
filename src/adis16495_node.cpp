@@ -40,7 +40,7 @@ class ImuNode
 {
 public:
   //Adis16470 imu;
-  Adis16495 imu;					//Change name
+  Adis16495 imu;					
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
   std::string device_;
@@ -99,7 +99,7 @@ public:
     data.header.frame_id = frame_id_;
     data.header.stamp = ros::Time::now();
 
-    // Linear acceleration
+    // Linear acceleration 
     data.linear_acceleration.x = imu.accl[0];
     data.linear_acceleration.y = imu.accl[1];
     data.linear_acceleration.z = imu.accl[2];
