@@ -162,8 +162,8 @@ support for this device is experimental.
 
 USB-ISS 3.3V output can supply up to 80mA.
 ADIS16495 supply current is 89mA(typical). External Linear Regulator(LDO) help power supply requirment for ADIS16495.
-The picture used ADP125(Evaluation board) which is 500mA LDO for 5V to 3.3V. 
+The picture used ADP125(Evaluation board) which is 500mA LDO for 5V to 3.3V. The 5V is from USB-ISS 5V pin. 
 
 <div align="center">
-  <img src="doc/adis16495_schematic.jpg" width="60%"/>
+  <img src="doc/adis16495_schematic2.jpg" width="60%"/>
 </div>
