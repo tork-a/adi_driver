@@ -33,13 +33,11 @@
 #include <string>
 #include "ros/ros.h"
 #include "sensor_msgs/Imu.h"
-//#include "adi_driver/adis16470.h"
-#include "adi_driver/adis16495.h"			//Change name
+#include "adi_driver/adis16495.h"
 
 class ImuNode
 {
 public:
-  //Adis16470 imu;
   Adis16495 imu;					
   ros::NodeHandle node_handle_;
   ros::Publisher imu_data_pub_;
