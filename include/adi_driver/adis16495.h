@@ -30,17 +30,13 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-//#ifndef ADI_DRIVER_ADIS16470_H
-//#define ADI_DRIVER_ADIS16470_H
-#ifndef ADI_DRIVER_ADIS16495_H			//Change name
-#define ADI_DRIVER_ADIS16495_H			//Change name
-
+#ifndef ADI_DRIVER_ADIS16495_H
+#define ADI_DRIVER_ADIS16495_H
 
 #include <termios.h>
 #include <string>
 
-//class Adis16470
-class Adis16495					//Change name
+class Adis16495	
 {
 public:
   //! File descripter for USB-ISS
@@ -53,10 +49,9 @@ public:
   // Acceleration sensor(x, y, z)
   double accl[3];
 
-  double temp; 					//Add temp
+  double temp; 						//Add temp
 
-  //Adis16470();
-  Adis16495();					//Change name
+  Adis16495();
   int openPort(const std::string device);
   void closePort();
   int get_product_id(int16_t& data);
