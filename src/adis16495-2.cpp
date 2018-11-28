@@ -40,8 +40,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <string>
-//#include "adi_driver/adis16470.h"
-#include "adi_driver/adis16495.h"		//Change header file
+#include "adi_driver/adis16495.h"
 
 
 /**
@@ -70,8 +69,7 @@ void short_to_big_endian(unsigned char *buff, int16_t data)
  * @brief Constructor
  */
 
-//Adis16470::Adis16470()
-Adis16495::Adis16495()					//change name
+Adis16495::Adis16495()
   : fd_(-1)
 {
 }
@@ -82,8 +80,8 @@ Adis16495::Adis16495()					//change name
  * @retval 0 Success
  * @retval -1 Failure
  */
-//int Adis16470::openPort(const std::string device)
-int Adis16495::openPort(const std::string device)	//change name
+
+int Adis16495::openPort(const std::string device)
 {
   fd_ = open(device.c_str(), O_RDWR | O_NOCTTY);
   if (fd_ < 0)
@@ -137,8 +135,8 @@ int Adis16495::openPort(const std::string device)	//change name
 /**
  * @brief Close device
  */
-//void Adis16470::closePort()
-void Adis16495::closePort()				//Change name
+
+void Adis16495::closePort()
 {
   if (tcsetattr(fd_, TCSANOW, &defaults_) < 0)
   {
@@ -152,8 +150,8 @@ void Adis16495::closePort()				//Change name
  * @retval 0 Success
  * @retval -1 Failed
  */
-//int Adis16470::get_product_id(int16_t& pid)
-int Adis16495::get_product_id(int16_t& pid)		//Change name
+
+int Adis16495::get_product_id(int16_t& pid)
 {
   // get product ID
   int r;
@@ -161,8 +159,7 @@ int Adis16495::get_product_id(int16_t& pid)		//Change name
 
   // Sending data
   buff[0] = 0x61;
-  //buff[1] = 0x7e;
-  buff[1] = 0x7e;					//Change register from 0x72
+  buff[1] = 0x7e;
   buff[2] = 0x00;
   int size = write(fd_, buff, 3);
   if (size != 3)
@@ -217,8 +214,8 @@ int Adis16495::get_product_id(int16_t& pid)		//Change name
  * - Adress is the first byte of actual address
  * - Actual data at the adress will be returned by next call.
  */
-//int Adis16470::read_register(char address, int16_t& data)
-int Adis16495::read_register(char address, int16_t& data)	//Change name
+
+int Adis16495::read_register(char address, int16_t& data)
 {
   unsigned char buff[3] = {0x61, address, 0x00};
   int size = write(fd_, buff, 3);
@@ -249,8 +246,8 @@ int Adis16495::read_register(char address, int16_t& data)	//Change name
  * - Adress is the first byte of actual address.
  * - Specify data at the adress.
  */
-//int Adis16470::write_register(char address, int16_t data)
-int Adis16495::write_register(char address, int16_t data) //
+
+int Adis16495::write_register(char address, int16_t data)
 {
   unsigned char buff[5] = {0x61, 0x00, 0x00, 0x00, 0x00};
   // Set R~/W bit 1
@@ -294,16 +291,16 @@ int Adis16495::write_register(char address, int16_t data) //
  * - See burst read function at pp.14 
  * - Data resolution is 16 bit
  */
-//int Adis16470::update_burst(void)
-int Adis16495::update_burst(void)			//Change name
+
+int Adis16495::update_burst(void)
 {
   unsigned char buff[64] = {0};
-  // 0x6800: Burst read function
+  // 0x7c00: Burst read function
   buff[0] = 0x61;
-  buff[1] = 0x7c;					//Change 0x68 to 0x7c
+  buff[1] = 0x7c;
   buff[2] = 0x00;
-  int size = write(fd_, buff, 38); 			//Change buffer size 24
-  if (size != 38)					//Change buffer size 24
+  int size = write(fd_, buff, 38); 
+  if (size != 38)
   {
     perror("update_burst");
     return -1;
@@ -313,8 +310,8 @@ int Adis16495::update_burst(void)			//Change name
     perror("update_burst");
     return -1;
   }
-  size = read(fd_, buff, 40);				//Change buffer size 30
-  if (size != 40) 					//Change buffer size 30
+  size = read(fd_, buff, 40);
+  if (size != 40) 
   {
     perror("update_burst");
     return -1;
@@ -327,24 +324,8 @@ int Adis16495::update_burst(void)			//Change name
 //    return -1;
 //  }
 
-/* 
- // X_GYRO_OUT
-  gyro[0] = big_endian_to_short(&buff[5]) * M_PI / 180 / 10.0;
-  // Y_GYRO_OUT
-  gyro[1] = big_endian_to_short(&buff[7]) * M_PI / 180 / 10.0;
-  // Z_GYRO_OUT
-  gyro[2] = big_endian_to_short(&buff[9]) * M_PI / 180 / 10.0;
-  // X_ACCL_OUT
-  accl[0] = big_endian_to_short(&buff[11]) * M_PI / 180 / 10.0;
-  // Y_ACCL_OUT
-  accl[1] = big_endian_to_short(&buff[13]) * M_PI / 180 / 10.0;
-  // Z_ACCL_OUT
-  accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
-  // TEMP_OUT
-  temp = big_endian_to_short(&buff[16]) * 0.1;
-*/
 
-//Change Burst read register for ADIS16495-2
+//Burst read register for ADIS16495-2
   // TEMP_OUT
   temp = big_endian_to_short(&buff[7]) * 0.1;
   // X_GYRO_OUT
@@ -367,27 +348,12 @@ int Adis16495::update_burst(void)			//Change name
 /**
  * @brief update gyro and accel in high-precision read
  */
-//int Adis16470::update(void)
-int Adis16495::update(void)				//Change name
+
+int Adis16495::update(void)
 {
   int16_t gyro_out[3], gyro_low[3], accl_out[3], accl_low[3], temp_out;
-/*
-  read_register(0x04, gyro_low[0]);
-  read_register(0x06, gyro_low[0]);
-  read_register(0x08, gyro_out[0]);
-  read_register(0x0a, gyro_low[1]);
-  read_register(0x0c, gyro_out[1]);
-  read_register(0x0e, gyro_low[2]);
-  read_register(0x10, gyro_out[2]);
-  read_register(0x12, accl_low[0]);
-  read_register(0x14, accl_out[0]);
-  read_register(0x16, accl_low[1]);
-  read_register(0x18, accl_out[1]);
-  read_register(0x1a, accl_low[2]);
-  read_register(0x1c, accl_out[2]);
-  read_register(0x00, temp_out);
-*/
-//Change register for ADIS16495
+
+//Register for ADIS16495
   read_register(0x10, gyro_low[0]);
   read_register(0x12, gyro_low[0]);
   read_register(0x14, gyro_out[0]);
@@ -410,8 +376,8 @@ int Adis16495::update(void)				//Change name
   // 32bit convert
   for (int i=0; i < 3; i++)
   {
-    gyro[i] = ((int32_t(gyro_out[i]) << 16) + int32_t(gyro_low[i])) * M_PI / 180.0 / 2621440.0;	//Change dynamic range from 655360
-    accl[i] = ((int32_t(accl_out[i]) << 16) + int32_t(accl_low[i])) * 9.8 / 262144000.0;	//Change dynamic range from52428800
+    gyro[i] = ((int32_t(gyro_out[i]) << 16) + int32_t(gyro_low[i])) * M_PI / 180.0 / 2621440.0;
+    accl[i] = ((int32_t(accl_out[i]) << 16) + int32_t(accl_low[i])) * 9.8 / 262144000.0;
   }
   return 0;
 }
@@ -421,8 +387,8 @@ int Adis16495::update(void)				//Change name
  * @retval 0 Success
  * @retval -1 Failed
  */
-//int Adis16470::set_bias_estimation_time(int16_t tbc)
-int Adis16495::set_bias_estimation_time(int16_t tbc)	//Change name
+
+int Adis16495::set_bias_estimation_time(int16_t tbc)
 {
   write_register(0x66, tbc);
   tbc = 0;
@@ -438,8 +404,8 @@ int Adis16495::set_bias_estimation_time(int16_t tbc)	//Change name
  * @retval 0 Success
  * @retval -1 Failed
  */
-//int Adis16470::bias_correction_update(void)
-int Adis16495::bias_correction_update(void)		//Change name
+
+int Adis16495::bias_correction_update(void)
 {
   // Bit0: Bias correction update
   int16_t data = 1;
