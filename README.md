@@ -11,7 +11,11 @@ Currently supported devices are:
 - [ADXL345](http://www.analog.com/en/products/mems/accelerometers/adxl345.html):
   - 3-Axis, ±2 g/±4 g/±8 g/±16 g Digital Accelerometer
   - The support for this device is experimental
-
+  
+- [ADIS16495](http://www.analog.com/en/products/mems/inertial-measurement-units/adis16495.html)
+  - Higher grade MEMS IMU
+  - The support for this device is experimental
+  
 You need a SPI interface on your PC to communicate with device. This
 package supports
 [Devantech's USB-IIS](https://www.robot-electronics.co.uk/htm/usb_iss_tech.htm)
