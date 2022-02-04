@@ -42,6 +42,7 @@ jobs:
       - run:
           name: deb
           command: |
+            apt install -y fakeroot
             source devel/setup.bash
             catkin build --catkin-make-args debbuild_adi_driver
             mkdir -p artifacts
