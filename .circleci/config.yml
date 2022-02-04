@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/catkin_ws
     docker:
-      - image: osrf/ros:kinetic-desktop
+      - image: osrf/ros:melodic-desktop
     steps:
       - run: apt update
       - run: apt install -y git ssh python-pip python-catkin-tools python-bloom
@@ -13,13 +13,13 @@ jobs:
       - run:
           name: rosdep
           command: |
-            source /opt/ros/kinetic/setup.sh
+            source /opt/ros/melodic/setup.sh
             catkin init
             rosdep install -r -y --from-paths src --ignore-src
       - run:
           name: bulid
           command: |
-            source /opt/ros/kinetic/setup.sh
+            source /opt/ros/melodic/setup.sh
             catkin build --no-status --no-notify -j2 --mem-limit 3G
       - run:
           name: test
@@ -42,6 +42,7 @@ jobs:
       - run:
           name: deb
           command: |
+            apt install -y fakeroot
             source devel/setup.bash
             catkin build --catkin-make-args debbuild_adi_driver
             mkdir -p artifacts

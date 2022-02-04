@@ -51,7 +51,7 @@ roslint_cpp()
 # ROS_PARALLEL_JOBS='' catkin_make --pkg ${PROJECT_NAME} -- debbuild
 add_custom_target(debbuild_${PROJECT_NAME}
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  COMMAND bloom-generate rosdebian --os-name ubuntu --os-version xenial --ros-distro kinetic
+  COMMAND bloom-generate rosdebian --os-name ubuntu --os-version bionic --ros-distro melodic
   COMMAND fakeroot debian/rules binary
   COMMAND find debian obj-x86_64-linux-gnu -type f -not -name postinst -print0 | xargs -0 rm --
   COMMAND find debian obj-x86_64-linux-gnu -type d -empty -delete
