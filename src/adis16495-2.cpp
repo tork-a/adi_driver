@@ -232,8 +232,10 @@ int Adis16495::read_register(char address, int16_t& data)
   if (size !=3)
   {
     perror("read");
+    return -1;
   }
   data = big_endian_to_short(&buff[1]);
+  return 0;
 }
 
 /**
@@ -408,7 +410,7 @@ int Adis16495::bias_correction_update(void)
 {
   // Bit0: Bias correction update
   int16_t data = 1;
-  write_register(0x68, data);
+  return write_register(0x68, data);
 }
 
 
