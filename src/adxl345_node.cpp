@@ -68,7 +68,7 @@ public:
   /**
    * @brief Open IMU device file
    */
-  bool open(void)
+  void open(void)
   {
     // Open device file
     if (imu_.open_device(device_) < 0)
@@ -81,7 +81,7 @@ public:
     imu_.get_product_id(pid);
     ROS_INFO("Product ID: %0x\n", pid);
   }
-  int publish_imu_data()
+  void publish_imu_data()
   {
     sensor_msgs::Imu data;
     data.header.frame_id = frame_id_;

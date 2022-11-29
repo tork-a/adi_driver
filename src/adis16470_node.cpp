@@ -108,7 +108,7 @@ public:
   /**
    * @brief Open IMU device file
    */
-  bool open(void)
+  void open(void)
   {
     // Open device file
     if (imu.openPort(device_) < 0)
@@ -123,7 +123,7 @@ public:
     imu.set_bias_estimation_time(0x070a);
   }
   
-  int publish_imu_data()
+  void publish_imu_data()
   {
     sensor_msgs::Imu data;
     data.header.frame_id = frame_id_;
@@ -147,7 +147,7 @@ public:
 
     imu_data_pub_.publish(data);
   }
-  int publish_temp_data()
+  void publish_temp_data()
   {
     sensor_msgs::Temperature data;
     data.header.frame_id = frame_id_;
