@@ -214,7 +214,7 @@ int Adis16495::get_product_id(int16_t& pid)
  * - Actual data at the adress will be returned by next call.
  */
 
-int Adis16495::read_register(char address, int16_t& data)
+int Adis16495::read_register(unsigned char address, int16_t& data)
 {
   unsigned char buff[3] = {0x61, address, 0x00};
   int size = write(fd_, buff, 3);
@@ -248,7 +248,7 @@ int Adis16495::read_register(char address, int16_t& data)
  * - Specify data at the adress.
  */
 
-int Adis16495::write_register(char address, int16_t data)
+int Adis16495::write_register(unsigned char address, int16_t data)
 {
   unsigned char buff[5] = {0x61, 0x00, 0x00, 0x00, 0x00};
   // Set R~/W bit 1

@@ -57,8 +57,8 @@ public:
   int get_product_id(int16_t& data);
   int update(void);
   int update_burst(void);
-  int read_register(char address, int16_t& data);
-  int write_register(char address, int16_t data);
+  int read_register(unsigned char address, int16_t& data);
+  int write_register(unsigned char address, int16_t data);
   int bias_correction_update(void);
   int set_bias_estimation_time(int16_t tbc);
 };
