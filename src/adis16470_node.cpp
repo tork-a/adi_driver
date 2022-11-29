@@ -51,7 +51,7 @@ public:
   bool publish_temperature_;
   double rate_;
 
-  bool bias_estimate (std_srvs::Trigger::Request &req,
+  bool bias_estimate (std_srvs::Trigger::Request &/*req*/,
                       std_srvs::Trigger::Response &res)
   {
     ROS_INFO("bias_estimate");

@@ -149,7 +149,6 @@ void Adis16470::closePort()
 int Adis16470::get_product_id(int16_t& pid)
 {
   // get product ID
-  int r;
   unsigned char buff[20];
 
   // Sending data
