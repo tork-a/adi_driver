@@ -226,8 +226,10 @@ int Adis16470::read_register(char address, int16_t& data)
   if (size !=3)
   {
     perror("read");
+    return -1;
   }
   data = big_endian_to_short(&buff[1]);
+  return 0;
 }
 
 /**
@@ -301,8 +303,8 @@ int Adis16470::update_burst(void)
     perror("update_burst");
     return -1;
   }
-  size = read(fd_, buff, 30);
-  if (size != 30)
+  size = read(fd_, buff, 24);
+  if (size != 24)
   {
     perror("update_burst");
     return -1;
@@ -320,13 +322,13 @@ int Adis16470::update_burst(void)
   // Z_GYRO_OUT
   gyro[2] = big_endian_to_short(&buff[9]) * M_PI / 180 / 10.0;
   // X_ACCL_OUT
-  accl[0] = big_endian_to_short(&buff[11]) * M_PI / 180 / 10.0;
+  accl[0] = big_endian_to_short(&buff[11]) * 9.8 * 40.0 / 32000.0;
   // Y_ACCL_OUT
-  accl[1] = big_endian_to_short(&buff[13]) * M_PI / 180 / 10.0;
+  accl[1] = big_endian_to_short(&buff[13]) * 9.8 * 40.0 / 32000.0;
   // Z_ACCL_OUT
-  accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
+  accl[2] = big_endian_to_short(&buff[15]) * 9.8 * 40.0 / 32000.0;
   // TEMP_OUT
-  temp = big_endian_to_short(&buff[16]) * 0.1;
+  temp = big_endian_to_short(&buff[17]) * 0.1;
   return 0;
 }
 
@@ -376,7 +378,7 @@ int Adis16470::set_bias_estimation_time(int16_t tbc)
   int16_t dummy = 0;
   read_register(0x66, dummy);
   read_register(0x00, tbc);
-  ROS_INFO("TBC: %04x", tbc);
+  fprintf(stdout, "TBC: %04x", tbc);
   return 0;
 }
 
